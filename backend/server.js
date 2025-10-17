@@ -3,6 +3,8 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
+const seriesRoutes = require('./routes/seriesRoutes');
+const measurementRoutes = require('./routes/measurementRoutes');
 
 dotenv.config();
 
@@ -19,6 +21,8 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/users', userRoutes);
+app.use('/api/series', seriesRoutes);
+app.use('/api/measurements', measurementRoutes);
 
 const PORT = process.env.PORT || 5000;
 
