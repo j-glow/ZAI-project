@@ -55,7 +55,7 @@ const deleteSeries = async (req, res) => {
 
     if (series) {
       await Measurement.deleteMany({ series: req.params.id });
-      await series.remove();
+      await series.deleteOne();
       res.send('Series and associated measurements removed');
     } else {
       res.status(404).send('Series not found');
