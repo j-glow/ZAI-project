@@ -5,10 +5,10 @@ import { useAuth } from '../context/AuthContext';
 import MeasurementChart from '../components/MeasurementChart';
 import MeasurementTable from '../components/MeasurementTable';
 import AddMeasurementForm from '../components/AddMeasurementForm';
+import SeriesManager from '../components/SeriesManager';
 
 const DashboardPage = () => {
   const { userInfo, logout } = useAuth();
-
   const [seriesList, setSeriesList] = useState([]);
   const [measurements, setMeasurements] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,6 +51,15 @@ const DashboardPage = () => {
       </nav>
 
       <main style={{ padding: '1rem' }}>
+        {loading ? (
+          <p>Loading manager...</p>
+        ) : (
+          <SeriesManager
+            seriesList={seriesList}
+            onSeriesChange={fetchData}
+          />
+        )}
+
         <h3>Add New Measurement</h3>
         {loading ? (
           <p>Loading form...</p>
