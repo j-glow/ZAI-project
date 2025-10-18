@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   LineChart,
   Line,
@@ -28,8 +28,19 @@ const formatDataForChart = (measurements) => {
   );
 };
 
-const MeasurementChart = ({ measurements, seriesList }) => {
+const MeasurementChart = ({ measurements, seriesList, highlightedPoint }) => {
   const chartData = formatDataForChart(measurements);
+
+  const formattedTimestamp = highlightedPoint
+    ? new Date(highlightedPoint).toLocaleString()
+    : null;
+
+  const activeIndex = useMemo(() =>
+    formattedTimestamp
+      ? chartData.findIndex(d => d.timestamp === formattedTimestamp)
+      : -1,
+    [chartData, formattedTimestamp]
+  );
 
   return (
     <ResponsiveContainer width="100%" height={400}>
@@ -41,6 +52,7 @@ const MeasurementChart = ({ measurements, seriesList }) => {
           left: 20,
           bottom: 5,
         }}
+        activeTooltipIndex={activeIndex === -1 ? undefined : activeIndex}
       >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="timestamp" />

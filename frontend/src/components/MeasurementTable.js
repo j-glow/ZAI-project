@@ -18,7 +18,7 @@ const tdStyle = {
   padding: '8px',
 };
 
-const MeasurementTable = ({ measurements, onMeasurementDeleted }) => {
+const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPoint, highlightedPoint }) => {
   const { userInfo } = useAuth();
 
   const handleDelete = async (id) => {
@@ -49,12 +49,17 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted }) => {
             <th style={thStyle}>Series</th>
             <th style={thStyle}>Timestamp</th>
             <th style={thStyle}>Actions</th>
+            <th style={thStyle} className="no-print">Actions</th>
           </tr>
         </thead>
         <tbody>
           {measurements.length > 0 ? (
             measurements.map((m) => (
-              <tr key={m._id}>
+              <tr
+                key={m._id}
+                onClick={() => setHighlightedPoint(m.timestamp)}
+                style={m.timestamp === highlightedPoint ? { background: '#e6f7ff', cursor: 'pointer' } : {cursor: 'pointer'}}
+              >
                 <td style={tdStyle}>{m.value}</td>
                 <td style={tdStyle}>
                   <span style={{ color: m.series.color }}>
@@ -62,14 +67,10 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted }) => {
                   </span>
                 </td>
                 <td style={tdStyle}>{new Date(m.timestamp).toLocaleString()}</td>
-                <td style={tdStyle}>
-                  <button>Edit</button>
-                  <button style={{ marginLeft: '5px' }}>Delete</button>
-                </td>
-                <td style={tdStyle}>
+                <td style={tdStyle} className="no-print">
                   <button>Edit</button>
                   <button
-                    onClick={() => handleDelete(m._id)}
+                    onClick={(e) => { e.stopPropagation(); handleDelete(m._id); }}
                     style={{ marginLeft: '5px', background: 'red', color: 'white' }}
                   >
                     Delete

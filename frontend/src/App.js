@@ -4,6 +4,8 @@ import { useAuth } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 
+import './App.css';
+
 const ProtectedRoute = ({ children }) => {
   const { userInfo } = useAuth();
   if (!userInfo) {

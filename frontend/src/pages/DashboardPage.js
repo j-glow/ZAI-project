@@ -18,6 +18,7 @@ const DashboardPage = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [selectedSeries, setSelectedSeries] = useState({});
+  const [highlightedPoint, setHighlightedPoint] = useState(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -78,7 +79,7 @@ const DashboardPage = () => {
 
   return (
     <div>
-      <nav style={{ padding: '1rem', background: '#eee', display: 'flex', justifyContent: 'space-between' }}>
+      <nav style={{ padding: '1rem', background: '#eee', display: 'flex', justifyContent: 'space-between', className: "no-print"}}>
         <h2>Measurement Dashboard</h2>
         <div>
           <span>Logged in as: <strong>{userInfo.username}</strong></span>
@@ -95,6 +96,7 @@ const DashboardPage = () => {
           <SeriesManager
             seriesList={seriesList}
             onSeriesChange={fetchData}
+            className="no-print"
           />
         )}
 
@@ -105,6 +107,7 @@ const DashboardPage = () => {
           <AddMeasurementForm
             seriesList={seriesList}
             onMeasurementAdded={fetchData}
+            className="no-print"
           />
         )}
 
@@ -117,9 +120,15 @@ const DashboardPage = () => {
             seriesList={seriesList}
             selectedSeries={selectedSeries}
             handleSeriesToggle={handleSeriesToggle}
+            className="no-print"
           />
         )}
 
+        <button onClick={() => window.print()} className="no-print" style={{marginBottom: '20px'}}>
+          Print Report
+        </button>
+
+        <div className="chart-container">
         <h3>Data Chart</h3>
         {loading ? (
           <p>Loading chart...</p>
@@ -127,20 +136,26 @@ const DashboardPage = () => {
           <MeasurementChart
             measurements={filteredMeasurements}
             seriesList={visibleSeriesList}
+            highlightedPoint={highlightedPoint}
           />
         )}
+      </div>
 
-        <h3>Data Table</h3>
-        {loading ? (
-          <p>Loading table...</p>
-        ) : error ? (
-          <p style={{ color: 'red' }}>{error}</p>
-        ) : (
-          <MeasurementTable
-            measurements={filteredMeasurements}
-            onMeasurementDeleted={fetchData}
-          />
-        )}
+        <div className="table-container">
+          <h3>Data Table</h3>
+          {loading ? (
+            <p>Loading table...</p>
+          ) : error ? (
+            <p style={{ color: 'red' }}>{error}</p>
+          ) : (
+            <MeasurementTable
+              measurements={filteredMeasurements}
+              onMeasurementDeleted={fetchData}
+              highlightedPoint={highlightedPoint}
+              setHighlightedPoint={setHighlightedPoint}
+            />
+          )}
+        </div>
       </main>
     </div>
   );
