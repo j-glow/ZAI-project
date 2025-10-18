@@ -1,8 +1,42 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+
+import MeasurementChart from '../components/MeasurementChart';
+import MeasurementTable from '../components/MeasurementTable';
+import AddMeasurementForm from '../components/AddMeasurementForm';
 
 const DashboardPage = () => {
   const { userInfo, logout } = useAuth();
+
+  const [seriesList, setSeriesList] = useState([]);
+  const [measurements, setMeasurements] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError('');
+
+      const [seriesRes, measurementsRes] = await Promise.all([
+        axios.get('http://localhost:5000/api/series'),
+        axios.get('http://localhost:5000/api/measurements')
+      ]);
+
+      setSeriesList(seriesRes.data);
+      setMeasurements(measurementsRes.data);
+    } catch (err) {
+      setError('Failed to fetch data');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   return (
     <div>
@@ -17,8 +51,33 @@ const DashboardPage = () => {
       </nav>
 
       <main style={{ padding: '1rem' }}>
-        <h1>Welcome!</h1>
-        <p>This is where the charts and tables will go.</p>
+        <h3>Add New Measurement</h3>
+        {loading ? (
+          <p>Loading form...</p>
+        ) : (
+          <AddMeasurementForm
+            seriesList={seriesList}
+            onMeasurementAdded={fetchData}
+          />
+        )}
+
+        <h3>Data Chart</h3>
+        {loading ? (
+          <p>Loading chart...</p>
+        ) : error ? (
+          <p style={{ color: 'red' }}>{error}</p>
+        ) : (
+          <MeasurementChart measurements={measurements} seriesList={seriesList} />
+        )}
+
+        <h3>Data Table</h3>
+        {loading ? (
+          <p>Loading table...</p>
+        ) : error ? (
+          <p style={{ color: 'red' }}>{error}</p>
+        ) : (
+          <MeasurementTable measurements={measurements} />
+        )}
       </main>
     </div>
   );
