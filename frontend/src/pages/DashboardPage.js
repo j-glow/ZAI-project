@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 
@@ -6,6 +6,7 @@ import MeasurementChart from '../components/MeasurementChart';
 import MeasurementTable from '../components/MeasurementTable';
 import AddMeasurementForm from '../components/AddMeasurementForm';
 import SeriesManager from '../components/SeriesManager';
+import DataFilters from '../components/DataFilters';
 
 const DashboardPage = () => {
   const { userInfo, logout } = useAuth();
@@ -13,6 +14,10 @@ const DashboardPage = () => {
   const [measurements, setMeasurements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [selectedSeries, setSelectedSeries] = useState({});
 
   const fetchData = useCallback(async () => {
     try {
@@ -25,6 +30,12 @@ const DashboardPage = () => {
 
       setSeriesList(seriesRes.data);
       setMeasurements(measurementsRes.data);
+
+      const initialSelected = {};
+      seriesRes.data.forEach((series) => {
+        initialSelected[series._id] = true;
+      });
+      setSelectedSeries(initialSelected);
     } catch (err) {
       setError('Failed to fetch data');
       console.error(err);
@@ -36,6 +47,34 @@ const DashboardPage = () => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  const filteredMeasurements = useMemo(() => {
+    return measurements.filter((m) => {
+      if (!selectedSeries[m.series._id]) {
+        return false;
+      }
+
+      if (startDate && new Date(m.timestamp) < new Date(startDate)) {
+        return false;
+      }
+      if (endDate && new Date(m.timestamp) > new Date(endDate)) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [measurements, startDate, endDate, selectedSeries]);
+
+  const visibleSeriesList = useMemo(() => {
+    return seriesList.filter((s) => selectedSeries[s._id]);
+  }, [seriesList, selectedSeries]);
+
+  const handleSeriesToggle = (seriesId) => {
+    setSelectedSeries((prevSelected) => ({
+      ...prevSelected,
+      [seriesId]: !prevSelected[seriesId],
+    }));
+  };
 
   return (
     <div>
@@ -69,13 +108,26 @@ const DashboardPage = () => {
           />
         )}
 
+        {!loading && (
+          <DataFilters
+            startDate={startDate}
+            setStartDate={setStartDate}
+            endDate={endDate}
+            setEndDate={setEndDate}
+            seriesList={seriesList}
+            selectedSeries={selectedSeries}
+            handleSeriesToggle={handleSeriesToggle}
+          />
+        )}
+
         <h3>Data Chart</h3>
         {loading ? (
           <p>Loading chart...</p>
-        ) : error ? (
-          <p style={{ color: 'red' }}>{error}</p>
         ) : (
-          <MeasurementChart measurements={measurements} seriesList={seriesList} />
+          <MeasurementChart
+            measurements={filteredMeasurements}
+            seriesList={visibleSeriesList}
+          />
         )}
 
         <h3>Data Table</h3>
@@ -84,7 +136,10 @@ const DashboardPage = () => {
         ) : error ? (
           <p style={{ color: 'red' }}>{error}</p>
         ) : (
-          <MeasurementTable measurements={measurements} />
+          <MeasurementTable
+            measurements={filteredMeasurements}
+            onMeasurementDeleted={fetchData}
+          />
         )}
       </main>
     </div>
