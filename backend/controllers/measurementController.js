@@ -98,7 +98,7 @@ const deleteMeasurement = async (req, res) => {
     const measurement = await Measurement.findById(req.params.id);
 
     if (measurement) {
-      await measurement.remove();
+      await measurement.deleteOne();
       res.send('Measurement removed');
     } else {
       res.status(404).send('Measurement not found');
