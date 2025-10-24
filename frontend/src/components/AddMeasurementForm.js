@@ -81,7 +81,7 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded }) => {
         {
           series,
           value: numValue,
-          timestamp,
+          timestampToSend,
         },
         config
       );
