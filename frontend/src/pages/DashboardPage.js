@@ -88,19 +88,19 @@ const DashboardPage = () => {
             className={activeView === 'series' ? 'active' : ''}
             onClick={() => setActiveView('series')}
           >
-            Manage Series
+            Series
           </button>
           <button
             className={activeView === 'measurement' ? 'active' : ''}
             onClick={() => setActiveView('measurement')}
           >
-            Add Measurement
+            Measurement
           </button>
           <button
             className={activeView === 'filter' ? 'active' : ''}
             onClick={() => setActiveView('filter')}
           >
-            Filters
+            Filter
           </button>
         </div>
         <div className="dashboard-nav-user">
