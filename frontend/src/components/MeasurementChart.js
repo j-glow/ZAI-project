@@ -51,7 +51,7 @@ const MeasurementChart = ({ measurements, seriesList, highlightedPoint }) => {
   );
 
   return (
-    <ResponsiveContainer width="100%" height={400}>
+    <ResponsiveContainer width="100%" height="100%">
       <LineChart
         data={chartData}
         margin={{
