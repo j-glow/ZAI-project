@@ -9,7 +9,8 @@ const formStyle = {
   marginBottom: '20px',
   display: 'grid',
   gridTemplateColumns: '1fr 1fr 1fr auto',
-  gap: '10px',
+  gridTemplateRows: 'auto auto',
+  gap: '10px 20px',
   alignItems: 'flex-end',
 };
 const inputGroupStyle = {
@@ -22,12 +23,14 @@ const inputStyle = {
 };
 const buttonStyle = {
   padding: '8px 16px',
-  height: '40px',
+  height: '100%',
   background: 'green',
   color: 'white',
   border: 'none',
   borderRadius: '4px',
   cursor: 'pointer',
+  gridColumn: '4 / 5',
+  gridRow: '1 / 3',
 };
 
 const AddMeasurementForm = ({ seriesList, onMeasurementAdded }) => {
@@ -97,7 +100,7 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded }) => {
 
   return (
     <form onSubmit={handleSubmit} style={formStyle}>
-      <div style={inputGroupStyle}>
+      <div style={{...inputGroupStyle, gridColumn: '1 / 2', gridRow: '1 / 2'}}>
         <label>Series</label>
         <select
           value={series}
@@ -111,8 +114,7 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded }) => {
           ))}
         </select>
       </div>
-
-      <div style={inputGroupStyle}>
+      <div style={{...inputGroupStyle, gridColumn: '2 / 3', gridRow: '1 / 2'}}>
         <label>Value</label>
         <input
           type="number"
@@ -123,8 +125,7 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded }) => {
           required
         />
       </div>
-
-      <div style={inputGroupStyle}>
+      <div style={{...inputGroupStyle, gridColumn: '3 / 4', gridRow: '1 / 2'}}>
         <label>Timestamp</label>
         <input
           type="datetime-local"
@@ -136,25 +137,43 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded }) => {
           }}
           readOnly={useCurrentTime}
           step="1"
-          required
         />
-        <div style={{ marginTop: '5px' }}>
-          <input
-            type="checkbox"
-            id="useCurrentTime"
-            checked={useCurrentTime}
-            onChange={(e) => setUseCurrentTime(e.target.checked)}
-          />
-          <label htmlFor="useCurrentTime" style={{ marginLeft: '5px' }}>
-            Use Current Time
-          </label>
-        </div>
       </div>
-
+      <div style={{ gridColumn: '3 / 4', gridRow: '2 / 3', alignSelf: 'flex-start' }}>
+        <input
+          type="checkbox"
+          id="useCurrentTime"
+          checked={useCurrentTime}
+          onChange={(e) => setUseCurrentTime(e.target.checked)}
+        />
+        <label htmlFor="useCurrentTime" style={{ marginLeft: '5px' }}>
+          Use Current Time
+        </label>
+      </div>
       <button type="submit" style={buttonStyle}>Add Measurement</button>
+      {error && (
+        <p style={{
+          color: 'red',
+          gridColumn: '2 / 3',
+          gridRow: '2 / 3',
+          alignSelf: 'flex-start',
+          margin: 0,
+        }}>
+          {error}
+        </p>
+      )}
 
-      {error && <p style={{ color: 'red', gridColumn: '1 / -1' }}>{error}</p>}
-      {success && <p style={{ color: 'green', gridColumn: '1 / -1' }}>{success}</p>}
+      {success && (
+        <p style={{
+          color: 'green',
+          gridColumn: '1 / 3',
+          gridRow: '2 / 3',
+          alignSelf: 'flex-start',
+          margin: 0,
+        }}>
+          {success}
+        </p>
+      )}
     </form>
   );
 };
