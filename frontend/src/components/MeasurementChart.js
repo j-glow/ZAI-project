@@ -14,18 +14,26 @@ const formatDataForChart = (measurements) => {
   const dataMap = new Map();
 
   measurements.forEach((m) => {
-    const timestamp = new Date(m.timestamp).toLocaleString();
+    const timestampKey = m.timestamp;
 
-    if (!dataMap.has(timestamp)) {
-      dataMap.set(timestamp, { timestamp });
+    if (!dataMap.has(timestampKey)) {
+      dataMap.set(timestampKey, { timestamp: m.timestamp });
     }
 
-    dataMap.get(timestamp)[m.series.name] = m.value;
+    dataMap.get(timestampKey)[m.series.name] = m.value;
   });
 
   return Array.from(dataMap.values()).sort(
     (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
   );
+};
+
+const formatXAxis = (isoString) => {
+  return new Date(isoString).toLocaleString('default', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
 };
 
 const MeasurementChart = ({ measurements, seriesList, highlightedPoint }) => {
@@ -55,7 +63,7 @@ const MeasurementChart = ({ measurements, seriesList, highlightedPoint }) => {
         activeTooltipIndex={activeIndex === -1 ? undefined : activeIndex}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="timestamp" />
+        <XAxis dataKey="timestamp" tickFormatter={formatXAxis} />
         <YAxis />
         <Tooltip />
         <Legend />

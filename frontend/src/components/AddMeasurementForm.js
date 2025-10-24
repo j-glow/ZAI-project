@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 
@@ -35,9 +35,16 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded }) => {
 
   const [series, setSeries] = useState(seriesList[0]?._id || '');
   const [value, setValue] = useState('');
-  const [timestamp, setTimestamp] = useState(new Date().toISOString().slice(0, 16));
+  const [useCurrentTime, setUseCurrentTime] = useState(true);
+  const [timestamp, setTimestamp] = useState(new Date().toISOString().slice(0, 19));
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  useEffect(() => {
+    if (useCurrentTime) {
+      setTimestamp(new Date().toISOString().slice(0, 19));
+    }
+  }, [useCurrentTime]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -64,6 +71,8 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded }) => {
         },
       };
 
+      const timestampToSend = useCurrentTime ? new Date().toISOString() : timestamp;
+
       await axios.post(
         'http://localhost:5000/api/measurements',
         {
@@ -77,6 +86,10 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded }) => {
       setSuccess('Measurement added!');
       setValue('');
       onMeasurementAdded();
+
+      if (useCurrentTime) {
+        setTimestamp(new Date().toISOString().slice(0, 19));
+      }
     } catch (err) {
       setError(err.response?.data || 'Failed to add measurement');
     }
@@ -117,9 +130,25 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded }) => {
           type="datetime-local"
           value={timestamp}
           onChange={(e) => setTimestamp(e.target.value)}
-          style={inputStyle}
+          style={{
+            ...inputStyle,
+            background: useCurrentTime ? '#eee' : '#fff'
+          }}
+          readOnly={useCurrentTime}
+          step="1"
           required
         />
+        <div style={{ marginTop: '5px' }}>
+          <input
+            type="checkbox"
+            id="useCurrentTime"
+            checked={useCurrentTime}
+            onChange={(e) => setUseCurrentTime(e.target.checked)}
+          />
+          <label htmlFor="useCurrentTime" style={{ marginLeft: '5px' }}>
+            Use Current Time
+          </label>
+        </div>
       </div>
 
       <button type="submit" style={buttonStyle}>Add Measurement</button>
