@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 const tableStyle = {
   width: '100%',
   borderCollapse: 'collapse',
+  tableLayout: 'fixed',
 };
 const thStyle = {
   background: '#f4f4f4',
@@ -15,6 +16,10 @@ const thStyle = {
   top: 0,
   zIndex: 1,
 };
+
+const valueThStyle = { ...thStyle, width: '25%' };
+const timestampThStyle = { ...thStyle, width: '55%' };
+const actionsThStyle = { ...thStyle, width: '20%' };
 const tdStyle = {
   border: '1px solid #ddd',
   padding: '10px 8px',
@@ -82,9 +87,9 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
     <table style={tableStyle} onMouseLeave={() => setHighlightedPoint(null)}>
       <thead style={{ background: '#f4f4f4' }}>
         <tr>
-          <th style={thStyle}>Value</th>
-          <th style={thStyle}>Timestamp</th>
-          <th style={thStyle} className="no-print">Actions</th>
+          <th style={valueThStyle}>Value</th>
+          <th style={timestampThStyle}>Timestamp</th>
+          <th style={actionsThStyle} className="no-print">Actions</th>
         </tr>
       </thead>
       <tbody>
