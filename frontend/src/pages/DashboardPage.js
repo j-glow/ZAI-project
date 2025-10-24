@@ -17,14 +17,12 @@ const DashboardPage = () => {
   const [measurements, setMeasurements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [selectedSeries, setSelectedSeries] = useState({});
-
   const [activeView, setActiveView] = useState('measurement');
-
   const [highlightedPoint, setHighlightedPoint] = useState(null);
+  const [tableSeriesFilter, setTableSeriesFilter] = useState('all');
 
   const fetchData = useCallback(async () => {
     try {
@@ -38,20 +36,24 @@ const DashboardPage = () => {
       setSeriesList(seriesRes.data);
       setMeasurements(measurementsRes.data);
 
-      if (Object.keys(selectedSeries).length === 0) {
-        const initialSelected = {};
-        seriesRes.data.forEach((series) => {
-          initialSelected[series._id] = true;
-        });
-        setSelectedSeries(initialSelected);
-      }
+      setSelectedSeries(prevSelected => {
+        if (Object.keys(prevSelected).length === 0) {
+          const initialSelected = {};
+          seriesRes.data.forEach((series) => {
+            initialSelected[series._id] = true;
+          });
+          return initialSelected;
+        }
+        return prevSelected;
+      });
+
     } catch (err) {
       setError('Failed to fetch data');
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }, [selectedSeries]);
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -59,7 +61,9 @@ const DashboardPage = () => {
 
   const filteredMeasurements = useMemo(() => {
     return measurements.filter((m) => {
-      if (!selectedSeries[m.series?._id]) { return false; }
+      if (!m.series || !selectedSeries[m.series._id]) {
+        return false;
+      }
       if (startDate && new Date(m.timestamp) < new Date(startDate)) { return false; }
       if (endDate && new Date(m.timestamp) > new Date(endDate)) { return false; }
       return true;
@@ -70,10 +74,17 @@ const DashboardPage = () => {
     return seriesList.filter((s) => selectedSeries[s._id]);
   }, [seriesList, selectedSeries]);
 
+  const tableFilteredMeasurements = useMemo(() => {
+    if (tableSeriesFilter === 'all') {
+      return filteredMeasurements;
+    }
+    return filteredMeasurements.filter(m => m.series?._id === tableSeriesFilter);
+  }, [filteredMeasurements, tableSeriesFilter]);
+
+
   const handleSeriesToggle = (seriesId) => {
     setSelectedSeries((prev) => ({ ...prev, [seriesId]: !prev[seriesId] }));
   };
-
 
   return (
     <div className="dashboard-page no-print">
@@ -106,7 +117,6 @@ const DashboardPage = () => {
           </button>
         </div>
       </nav>
-
       <main className="dashboard-main">
         <div className="dashboard-left">
           <div className="view-manager no-print">
@@ -138,12 +148,13 @@ const DashboardPage = () => {
               </>
             )}
           </div>
+
           <div className="chart-area">
-            <h3>Data Chart
-              <button onClick={fetchData} className="no-print" style={{marginLeft: '10px', fontSize: '0.8rem'}}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <button onClick={fetchData} className="no-print" style={{fontSize: '0.8rem'}}>
                 Refresh
               </button>
-            </h3>
+            </div>
             <div className="chart-wrapper">
               {loading ? (
                 <p>Loading chart...</p>
@@ -158,7 +169,23 @@ const DashboardPage = () => {
           </div>
         </div>
         <div className="table-area">
-          <h3>Data Table</h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            {!loading && (
+              <select
+                value={tableSeriesFilter}
+                onChange={(e) => setTableSeriesFilter(e.target.value)}
+                style={{ padding: '5px' }}
+                className="no-print"
+              >
+                <option value="all">Show All Series</option>
+                {seriesList.map((series) => (
+                  <option key={series._id} value={series._id}>
+                    Show only: {series.name}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
           <div className="table-scroll-wrapper">
             {loading ? (
               <p>Loading table...</p>
@@ -166,7 +193,7 @@ const DashboardPage = () => {
               <p style={{ color: 'red' }}>{error}</p>
             ) : (
               <MeasurementTable
-                measurements={filteredMeasurements}
+                measurements={tableFilteredMeasurements}
                 onMeasurementDeleted={fetchData}
                 highlightedPoint={highlightedPoint}
                 setHighlightedPoint={setHighlightedPoint}
