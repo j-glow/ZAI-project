@@ -16,7 +16,6 @@ const DashboardPage = () => {
 
   const fetchData = useCallback(async () => {
     try {
-      setLoading(true);
       setError('');
 
       const [seriesRes, measurementsRes] = await Promise.all([
