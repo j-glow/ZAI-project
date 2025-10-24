@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 
 import MeasurementChart from '../components/MeasurementChart';
 import MeasurementTable from '../components/MeasurementTable';
+import SeriesTable from '../components/SeriesTable';
 import AddMeasurementForm from '../components/AddMeasurementForm';
 import SeriesManager from '../components/SeriesManager';
 import DataFilters from '../components/DataFilters';
@@ -27,6 +28,8 @@ const DashboardPage = () => {
   const [highlightedPoint, setHighlightedPoint] = useState(null);
 
   const [tableSeriesFilter, setTableSeriesFilter] = useState('all');
+
+  const [tableMode, setTableMode] = useState('data');
 
   const fetchData = useCallback(async () => {
     try {
@@ -161,21 +164,32 @@ const DashboardPage = () => {
           </div>
         </div>
         <div className="table-area">
-          <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             {!loading && (
-              <select
-                value={tableSeriesFilter}
-                onChange={(e) => setTableSeriesFilter(e.target.value)}
-                style={{ padding: '5px' }}
-                className="no-print"
-              >
-                <option value="all">Show All Series</option>
-                {seriesList.map((series) => (
-                  <option key={series._id} value={series._id}>
-                    Show only: {series.name}
-                  </option>
-                ))}
-              </select>
+              <>
+                <select
+                  value={tableMode}
+                  onChange={(e) => setTableMode(e.target.value)}
+                  className={`no-print table-mode-select ${tableMode === 'series' ? 'series-mode' : ''}`}
+                >
+                  <option value="data">Data</option>
+                  <option value="series">Series</option>
+                </select>
+                <select
+                  value={tableSeriesFilter}
+                  onChange={(e) => setTableSeriesFilter(e.target.value)}
+                  style={{ padding: '5px' }}
+                  className={`no-print ${tableMode === 'series' ? 'series-mode-disabled' : ''}`}
+                  disabled={tableMode === 'series'}
+                >
+                  <option value="all">Show All Series</option>
+                  {seriesList.map((series) => (
+                    <option key={series._id} value={series._id}>
+                      Show only: {series.name}
+                    </option>
+                  ))}
+                </select>
+              </>
             )}
           </div>
           <div className="table-scroll-wrapper">
@@ -184,12 +198,18 @@ const DashboardPage = () => {
             ) : error ? (
               <p style={{ color: 'red' }}>{error}</p>
             ) : (
-              <MeasurementTable
-                measurements={tableFilteredMeasurements}
-                onMeasurementDeleted={fetchData}
-                highlightedPoint={highlightedPoint}
-                setHighlightedPoint={setHighlightedPoint}
-              />
+              <>
+                {tableMode === 'data' ? (
+                  <MeasurementTable
+                    measurements={tableFilteredMeasurements}
+                    onMeasurementDeleted={fetchData}
+                    highlightedPoint={highlightedPoint}
+                    setHighlightedPoint={setHighlightedPoint}
+                  />
+                ) : (
+                  <SeriesTable seriesList={seriesList} />
+                )}
+              </>
             )}
           </div>
         </div>

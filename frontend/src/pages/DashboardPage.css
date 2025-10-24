@@ -128,6 +128,19 @@
   border-radius: 4px;
 }
 
+.table-mode-select {
+  padding: 5px;
+}
+
+.table-mode-select.series-mode {
+  background-color: lightgray;
+}
+
+.series-mode-disabled {
+  background-color: lightgray;
+  cursor: not-allowed;
+}
+
 @media print {
   .no-print, .dashboard-nav {
     display: none !important;
