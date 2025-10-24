@@ -31,9 +31,7 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
             Authorization: `Bearer ${userInfo.token}`,
           },
         };
-
         await axios.delete(`http://localhost:5000/api/measurements/${id}`, config);
-
         onMeasurementDeleted();
       } catch (error) {
         console.error('Failed to delete measurement', error);
@@ -47,7 +45,6 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
       <thead style={{ background: '#f4f4f4' }}>
         <tr>
           <th style={thStyle}>Value</th>
-          <th style={thStyle}>Series</th>
           <th style={thStyle}>Timestamp</th>
           <th style={thStyle} className="no-print">Actions</th>
         </tr>
@@ -60,12 +57,7 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
               onClick={() => setHighlightedPoint(m.timestamp)}
               style={m.timestamp === highlightedPoint ? { background: '#e6f7ff', cursor: 'pointer' } : { cursor: 'pointer' }}
             >
-              <td style={tdStyle}>{m.value}</td>
-              <td style={tdStyle}>
-                <span style={{ color: m.series.color }}>
-                  {m.series.name}
-                </span>
-              </td>
+              <td style={tdStyle}>{m.value.toFixed(2)}</td>
               <td style={tdStyle}>{new Date(m.timestamp).toLocaleString('default', {
                 dateStyle: 'short',
                 timeStyle: 'medium',
@@ -83,7 +75,7 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
           ))
         ) : (
           <tr>
-            <td colSpan="4" style={{ ...tdStyle, textAlign: 'center', padding: '20px' }}>
+            <td colSpan="3" style={{ ...tdStyle, textAlign: 'center', padding: '20px' }}>
               No measurements found.
             </td>
           </tr>
