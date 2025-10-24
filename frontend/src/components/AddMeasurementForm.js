@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import ManagerBox from './ManagerBox';
 
-const managerStyle = {
-  padding: '20px',
-  border: '1px solid #ccc',
-  borderRadius: '8px',
-  background: '#f9f9f9',
-  flex: 1,
-};
 const formStyle = {
   display: 'grid',
   gridTemplateColumns: '1fr 1fr 1fr auto',
@@ -26,14 +20,14 @@ const inputStyle = {
 };
 const buttonStyle = {
   padding: '8px 16px',
-  height: '100%',
-  background: 'green',
+  height: '40px',
+  background: 'blue',
   color: 'white',
   border: 'none',
   borderRadius: '4px',
   cursor: 'pointer',
   gridColumn: '4 / 5',
-  gridRow: '1 / 3',
+  gridRow: '1 / 2',
 };
 
 const AddMeasurementForm = ({ seriesList, onMeasurementAdded, className }) => {
@@ -102,8 +96,7 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded, className }) => {
   };
 
   return (
-    <div style={managerStyle} className={className}>
-      <h3>New Measurement</h3>
+    <ManagerBox className={className}>
       <form onSubmit={handleSubmit} style={formStyle}>
         <div style={{...inputGroupStyle, gridColumn: '1 / 2', gridRow: '1 / 2'}}>
           <label>Series</label>
@@ -182,7 +175,7 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded, className }) => {
           </p>
         )}
       </form>
-    </div>
+    </ManagerBox>
   );
 };
 

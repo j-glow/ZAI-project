@@ -1,28 +1,13 @@
 import React from 'react';
+import ManagerBox from './ManagerBox';
 
-const filterContainerStyle = {
-  padding: '15px 20px',
-  border: '1px solid #ccc',
-  borderRadius: '8px',
-  marginBottom: '20px',
-  background: '#f9f9f9',
-  display: 'flex',
-  gap: '20px',
-  alignItems: 'flex-start',
-};
-const timeFilterStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '10px',
-};
-const seriesFilterStyle = {
+const inputGroupStyle = {
   display: 'flex',
   flexDirection: 'column',
   gap: '5px',
 };
-const checkboxGroupStyle = {
-  display: 'block',
-  marginRight: '15px',
+const inputStyle = {
+  padding: '5px',
 };
 
 const DataFilters = ({
@@ -31,49 +16,48 @@ const DataFilters = ({
   endDate,
   setEndDate,
   seriesList,
-  selectedSeries,
-  handleSeriesToggle,
+  chartSeriesFilter,
+  setChartSeriesFilter,
+  className,
 }) => {
   return (
-    <div style={filterContainerStyle}>
-      <div style={timeFilterStyle}>
-        <h4>Filter by Time</h4>
-        <div>
-          <label style={{ marginRight: '5px' }}>Start Date:</label>
+    <ManagerBox className={className}>
+      <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
+        <div style={inputGroupStyle}>
+          <label>Start Date:</label>
           <input
             type="datetime-local"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
+            style={inputStyle}
           />
         </div>
-        <div>
-          <label style={{ marginRight: '5px' }}>End Date:</label>
+        <div style={inputGroupStyle}>
+          <label>End Date:</label>
           <input
             type="datetime-local"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
+            style={inputStyle}
           />
         </div>
-      </div>
-
-      <div style={seriesFilterStyle}>
-        <h4>Filter by Series</h4>
-        <div>
-          {seriesList.map((series) => (
-            <label key={series._id} style={checkboxGroupStyle}>
-              <input
-                type="checkbox"
-                checked={selectedSeries[series._id] || false}
-                onChange={() => handleSeriesToggle(series._id)}
-              />
-              <span style={{ color: series.color, marginLeft: '5px' }}>
-                {series.name}
-              </span>
-            </label>
-          ))}
+        <div style={inputGroupStyle}>
+          <label>Series:</label>
+          <select
+            value={chartSeriesFilter}
+            onChange={(e) => setChartSeriesFilter(e.target.value)}
+            style={{ ...inputStyle, width: '250px' }}
+          >
+            <option value="all">Show All Series</option>
+            {seriesList.map((series) => (
+              <option key={series._id} value={series._id}>
+                Show only: {series.name}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
-    </div>
+    </ManagerBox>
   );
 };
 

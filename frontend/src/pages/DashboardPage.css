@@ -49,6 +49,7 @@
   gap: 1rem;
   padding: 1rem;
   overflow: hidden;
+  height: calc(100vh - 60px);
 }
 
 .dashboard-left {
@@ -62,6 +63,21 @@
   background: #ffffff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+
+  height: 150px;
+  overflow-y: auto;
+  display: flex;
+}
+.view-manager > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.view-manager > div > form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
 }
 .chart-area {
   grid-row: 2 / 3;

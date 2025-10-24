@@ -17,11 +17,15 @@ const DashboardPage = () => {
   const [measurements, setMeasurements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [selectedSeries, setSelectedSeries] = useState({});
+  const [chartSeriesFilter, setChartSeriesFilter] = useState('all');
+
   const [activeView, setActiveView] = useState('measurement');
+
   const [highlightedPoint, setHighlightedPoint] = useState(null);
+
   const [tableSeriesFilter, setTableSeriesFilter] = useState('all');
 
   const fetchData = useCallback(async () => {
@@ -35,18 +39,6 @@ const DashboardPage = () => {
 
       setSeriesList(seriesRes.data);
       setMeasurements(measurementsRes.data);
-
-      setSelectedSeries(prevSelected => {
-        if (Object.keys(prevSelected).length === 0) {
-          const initialSelected = {};
-          seriesRes.data.forEach((series) => {
-            initialSelected[series._id] = true;
-          });
-          return initialSelected;
-        }
-        return prevSelected;
-      });
-
     } catch (err) {
       setError('Failed to fetch data');
       console.error(err);
@@ -59,36 +51,34 @@ const DashboardPage = () => {
     fetchData();
   }, [fetchData]);
 
-  const filteredMeasurements = useMemo(() => {
+  const chartFilteredMeasurements = useMemo(() => {
     return measurements.filter((m) => {
-      if (!m.series || !selectedSeries[m.series._id]) {
+      if (chartSeriesFilter !== 'all' && m.series?._id !== chartSeriesFilter) {
         return false;
       }
       if (startDate && new Date(m.timestamp) < new Date(startDate)) { return false; }
       if (endDate && new Date(m.timestamp) > new Date(endDate)) { return false; }
       return true;
     });
-  }, [measurements, startDate, endDate, selectedSeries]);
+  }, [measurements, startDate, endDate, chartSeriesFilter]);
 
   const visibleSeriesList = useMemo(() => {
-    return seriesList.filter((s) => selectedSeries[s._id]);
-  }, [seriesList, selectedSeries]);
+    if (chartSeriesFilter === 'all') {
+      return seriesList;
+    }
+    return seriesList.filter((s) => s._id === chartSeriesFilter);
+  }, [seriesList, chartSeriesFilter]);
 
   const tableFilteredMeasurements = useMemo(() => {
     if (tableSeriesFilter === 'all') {
-      return filteredMeasurements;
+      return chartFilteredMeasurements;
     }
-    return filteredMeasurements.filter(m => m.series?._id === tableSeriesFilter);
-  }, [filteredMeasurements, tableSeriesFilter]);
+    return chartFilteredMeasurements.filter(m => m.series?._id === tableSeriesFilter);
+  }, [chartFilteredMeasurements, tableSeriesFilter]);
 
-
-  const handleSeriesToggle = (seriesId) => {
-    setSelectedSeries((prev) => ({ ...prev, [seriesId]: !prev[seriesId] }));
-  };
 
   return (
     <div className="dashboard-page no-print">
-
       <nav className="dashboard-nav no-print">
         <div className="dashboard-nav-tabs">
           <button
@@ -141,17 +131,19 @@ const DashboardPage = () => {
                     endDate={endDate}
                     setEndDate={setEndDate}
                     seriesList={seriesList}
-                    selectedSeries={selectedSeries}
-                    handleSeriesToggle={handleSeriesToggle}
+                    chartSeriesFilter={chartSeriesFilter}
+                    setChartSeriesFilter={setChartSeriesFilter}
                   />
                 )}
               </>
             )}
           </div>
-
           <div className="chart-area">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <button onClick={fetchData} className="no-print" style={{fontSize: '0.8rem'}}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '1rem', gap: '10px' }} className="no-print">
+              <button onClick={() => window.print()} style={{fontSize: '0.8rem'}}>
+                Print
+              </button>
+              <button onClick={fetchData} style={{fontSize: '0.8rem'}}>
                 Refresh
               </button>
             </div>
@@ -160,7 +152,7 @@ const DashboardPage = () => {
                 <p>Loading chart...</p>
               ) : (
                 <MeasurementChart
-                  measurements={filteredMeasurements}
+                  measurements={chartFilteredMeasurements}
                   seriesList={visibleSeriesList}
                   highlightedPoint={highlightedPoint}
                 />
@@ -169,7 +161,7 @@ const DashboardPage = () => {
           </div>
         </div>
         <div className="table-area">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '1rem' }}>
             {!loading && (
               <select
                 value={tableSeriesFilter}
