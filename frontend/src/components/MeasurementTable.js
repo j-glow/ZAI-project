@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 
@@ -20,8 +20,46 @@ const tdStyle = {
   padding: '10px 8px',
 };
 
-const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPoint, highlightedPoint }) => {
+const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPoint, highlightedPoint, onMeasurementUpdated }) => {
   const { userInfo } = useAuth();
+  const [editingId, setEditingId] = useState(null);
+  const [editFormData, setEditFormData] = useState({ value: '', timestamp: '' });
+
+  const handleEdit = (measurement) => {
+    setEditingId(measurement._id);
+    setEditFormData({
+      value: measurement.value,
+      timestamp: new Date(measurement.timestamp).toISOString().slice(0, 19),
+    });
+  };
+
+  const handleCancel = () => {
+    setEditingId(null);
+  };
+
+  const handleUpdate = async (id) => {
+    try {
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
+      await axios.put(`http://localhost:5000/api/measurements/${id}`, editFormData, config);
+      setEditingId(null);
+      onMeasurementUpdated();
+    } catch (error) {
+      console.error('Failed to update measurement', error);
+      alert('Failed to update measurement');
+    }
+  };
+
+  const handleFormChange = (e) => {
+    setEditFormData({
+      ...editFormData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this measurement?')) {
@@ -54,23 +92,53 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
           measurements.map((m) => (
             <tr
               key={m._id}
-              onClick={() => setHighlightedPoint(m.timestamp)}
+              onClick={() => editingId !== m._id && setHighlightedPoint(m.timestamp)}
               style={m.timestamp === highlightedPoint ? { background: '#e6f7ff', cursor: 'pointer' } : { cursor: 'pointer' }}
             >
-              <td style={tdStyle}>{m.value.toFixed(2)}</td>
-              <td style={tdStyle}>{new Date(m.timestamp).toLocaleString('default', {
-                dateStyle: 'short',
-                timeStyle: 'medium',
-              })}</td>
-              <td style={tdStyle} className="no-print">
-                <button>Edit</button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); handleDelete(m._id); }}
-                  style={{ marginLeft: '5px', background: 'red', color: 'white' }}
-                >
-                  Delete
-                </button>
-              </td>
+              {editingId === m._id ? (
+                <>
+                  <td style={tdStyle}>
+                    <input
+                      type="number"
+                      name="value"
+                      value={editFormData.value}
+                      onChange={handleFormChange}
+                      style={{ width: '100%' }}
+                    />
+                  </td>
+                  <td style={tdStyle}>
+                    <input
+                      type="datetime-local"
+                      name="timestamp"
+                      value={editFormData.timestamp}
+                      onChange={handleFormChange}
+                      style={{ width: '100%' }}
+                      step="any"
+                    />
+                  </td>
+                  <td style={tdStyle} className="no-print">
+                    <button onClick={() => handleUpdate(m._id)}>Save</button>
+                    <button onClick={handleCancel} style={{ marginLeft: '5px' }}>Cancel</button>
+                  </td>
+                </>
+              ) : (
+                <>
+                  <td style={tdStyle}>{m.value.toFixed(2)}</td>
+                  <td style={tdStyle}>{new Date(m.timestamp).toLocaleString('default', {
+                    dateStyle: 'short',
+                    timeStyle: 'medium',
+                  })}</td>
+                  <td style={tdStyle} className="no-print">
+                    <button onClick={() => handleEdit(m)}>Edit</button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleDelete(m._id); }}
+                      style={{ marginLeft: '5px', background: 'red', color: 'white' }}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </>
+              )}
             </tr>
           ))
         ) : (

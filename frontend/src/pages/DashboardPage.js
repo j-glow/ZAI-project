@@ -203,6 +203,7 @@ const DashboardPage = () => {
                   <MeasurementTable
                     measurements={tableFilteredMeasurements}
                     onMeasurementDeleted={fetchData}
+                    onMeasurementUpdated={fetchData}
                     highlightedPoint={highlightedPoint}
                     setHighlightedPoint={setHighlightedPoint}
                   />
