@@ -1,0 +1,130 @@
+.dashboard-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  background: #f0f2f5;
+}
+
+.dashboard-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+  background: #ffffff;
+  border-bottom: 1px solid #d9d9d9;
+  flex-shrink: 0;
+  height: 60px;
+}
+.dashboard-nav-tabs button {
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  color: #555;
+}
+.dashboard-nav-tabs button.active {
+  border-bottom: 3px solid #1890ff;
+  color: #1890ff;
+}
+.dashboard-nav-user {
+  color: #555;
+}
+.dashboard-nav-user button {
+  margin-left: 1rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.dashboard-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  overflow: hidden;
+}
+
+.dashboard-left {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 1rem;
+  min-height: 0;
+}
+.view-manager {
+  grid-row: 1 / 2;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.chart-area {
+  grid-row: 2 / 3;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+
+  position: relative;
+}
+.chart-area h3 {
+  margin: 0 0 1rem 0;
+  flex-shrink: 0;
+}
+.chart-wrapper {
+  flex: 1;
+}
+
+
+.table-area {
+  grid-column: 2 / 3;
+  grid-row: 1 / 3;
+
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  padding: 1.5rem;
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+.table-area h3 {
+  margin: 0 0 1rem 0;
+  flex-shrink: 0;
+}
+.table-scroll-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+}
+
+@media print {
+  .no-print, .dashboard-nav {
+    display: none !important;
+  }
+  .dashboard-main {
+    display: block;
+    padding: 0;
+  }
+  .chart-area, .table-area {
+    width: 100%;
+    box-shadow: none;
+    border: 1px solid #000;
+    page-break-inside: avoid;
+  }
+  .table-scroll-wrapper {
+    overflow: visible;
+    height: auto;
+  }
+}

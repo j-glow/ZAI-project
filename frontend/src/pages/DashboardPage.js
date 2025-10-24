@@ -8,8 +8,11 @@ import AddMeasurementForm from '../components/AddMeasurementForm';
 import SeriesManager from '../components/SeriesManager';
 import DataFilters from '../components/DataFilters';
 
+import './DashboardPage.css';
+
 const DashboardPage = () => {
   const { userInfo, logout } = useAuth();
+
   const [seriesList, setSeriesList] = useState([]);
   const [measurements, setMeasurements] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,6 +21,9 @@ const DashboardPage = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [selectedSeries, setSelectedSeries] = useState({});
+
+  const [activeView, setActiveView] = useState('measurement');
+
   const [highlightedPoint, setHighlightedPoint] = useState(null);
 
   const fetchData = useCallback(async () => {
@@ -32,18 +38,20 @@ const DashboardPage = () => {
       setSeriesList(seriesRes.data);
       setMeasurements(measurementsRes.data);
 
-      const initialSelected = {};
-      seriesRes.data.forEach((series) => {
-        initialSelected[series._id] = true;
-      });
-      setSelectedSeries(initialSelected);
+      if (Object.keys(selectedSeries).length === 0) {
+        const initialSelected = {};
+        seriesRes.data.forEach((series) => {
+          initialSelected[series._id] = true;
+        });
+        setSelectedSeries(initialSelected);
+      }
     } catch (err) {
       setError('Failed to fetch data');
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [selectedSeries]);
 
   useEffect(() => {
     fetchData();
@@ -51,17 +59,9 @@ const DashboardPage = () => {
 
   const filteredMeasurements = useMemo(() => {
     return measurements.filter((m) => {
-      if (!selectedSeries[m.series._id]) {
-        return false;
-      }
-
-      if (startDate && new Date(m.timestamp) < new Date(startDate)) {
-        return false;
-      }
-      if (endDate && new Date(m.timestamp) > new Date(endDate)) {
-        return false;
-      }
-
+      if (!selectedSeries[m.series?._id]) { return false; }
+      if (startDate && new Date(m.timestamp) < new Date(startDate)) { return false; }
+      if (endDate && new Date(m.timestamp) > new Date(endDate)) { return false; }
       return true;
     });
   }, [measurements, startDate, endDate, selectedSeries]);
@@ -71,90 +71,108 @@ const DashboardPage = () => {
   }, [seriesList, selectedSeries]);
 
   const handleSeriesToggle = (seriesId) => {
-    setSelectedSeries((prevSelected) => ({
-      ...prevSelected,
-      [seriesId]: !prevSelected[seriesId],
-    }));
+    setSelectedSeries((prev) => ({ ...prev, [seriesId]: !prev[seriesId] }));
   };
 
+
   return (
-    <div>
-      <nav style={{ padding: '1rem', background: '#eee', display: 'flex', justifyContent: 'space-between', className: "no-print"}}>
-        <h2>Measurement Dashboard</h2>
-        <div>
+    <div className="dashboard-page no-print">
+
+      <nav className="dashboard-nav no-print">
+        <div className="dashboard-nav-tabs">
+          <button
+            className={activeView === 'series' ? 'active' : ''}
+            onClick={() => setActiveView('series')}
+          >
+            Manage Series
+          </button>
+          <button
+            className={activeView === 'measurement' ? 'active' : ''}
+            onClick={() => setActiveView('measurement')}
+          >
+            Add Measurement
+          </button>
+          <button
+            className={activeView === 'filter' ? 'active' : ''}
+            onClick={() => setActiveView('filter')}
+          >
+            Filters
+          </button>
+        </div>
+        <div className="dashboard-nav-user">
           <span>Logged in as: <strong>{userInfo.username}</strong></span>
-          <button onClick={logout} style={{ marginLeft: '1rem' }}>
+          <button onClick={logout}>
             Logout
           </button>
         </div>
       </nav>
 
-      <main style={{ padding: '1rem' }}>
-        {loading ? (
-          <p>Loading manager...</p>
-        ) : (
-          <SeriesManager
-            seriesList={seriesList}
-            onSeriesChange={fetchData}
-            className="no-print"
-          />
-        )}
-
-        <h3>Add New Measurement</h3>
-        {loading ? (
-          <p>Loading form...</p>
-        ) : (
-          <AddMeasurementForm
-            seriesList={seriesList}
-            onMeasurementAdded={fetchData}
-            className="no-print"
-          />
-        )}
-
-        {!loading && (
-          <DataFilters
-            startDate={startDate}
-            setStartDate={setStartDate}
-            endDate={endDate}
-            setEndDate={setEndDate}
-            seriesList={seriesList}
-            selectedSeries={selectedSeries}
-            handleSeriesToggle={handleSeriesToggle}
-            className="no-print"
-          />
-        )}
-
-        <button onClick={() => window.print()} className="no-print" style={{marginBottom: '20px'}}>
-          Print Report
-        </button>
-
-        <div className="chart-container">
-        <h3>Data Chart</h3>
-        {loading ? (
-          <p>Loading chart...</p>
-        ) : (
-          <MeasurementChart
-            measurements={filteredMeasurements}
-            seriesList={visibleSeriesList}
-            highlightedPoint={highlightedPoint}
-          />
-        )}
-      </div>
-
-        <div className="table-container">
+      <main className="dashboard-main">
+        <div className="dashboard-left">
+          <div className="view-manager no-print">
+            {loading ? <p style={{padding: '1rem'}}>Loading controls...</p> : (
+              <>
+                {activeView === 'series' && (
+                  <SeriesManager
+                    seriesList={seriesList}
+                    onSeriesChange={fetchData}
+                  />
+                )}
+                {activeView === 'measurement' && (
+                  <AddMeasurementForm
+                    seriesList={seriesList}
+                    onMeasurementAdded={fetchData}
+                  />
+                )}
+                {activeView === 'filter' && (
+                  <DataFilters
+                    startDate={startDate}
+                    setStartDate={setStartDate}
+                    endDate={endDate}
+                    setEndDate={setEndDate}
+                    seriesList={seriesList}
+                    selectedSeries={selectedSeries}
+                    handleSeriesToggle={handleSeriesToggle}
+                  />
+                )}
+              </>
+            )}
+          </div>
+          <div className="chart-area">
+            <h3>Data Chart
+              <button onClick={fetchData} className="no-print" style={{marginLeft: '10px', fontSize: '0.8rem'}}>
+                Refresh
+              </button>
+            </h3>
+            <div className="chart-wrapper">
+              {loading ? (
+                <p>Loading chart...</p>
+              ) : (
+                <MeasurementChart
+                  measurements={filteredMeasurements}
+                  seriesList={visibleSeriesList}
+                  highlightedPoint={highlightedPoint}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="table-area">
           <h3>Data Table</h3>
-          {loading ? (
-            <p>Loading table...</p>
-          ) : error ? (
-            <p style={{ color: 'red' }}>{error}</p>
-          ) : (
-            <MeasurementTable
-              measurements={filteredMeasurements}
-              onMeasurementDeleted={fetchData}
-              highlightedPoint={highlightedPoint}
-              setHighlightedPoint={setHighlightedPoint}
-            />
-          )}
+          <div className="table-scroll-wrapper">
+            {loading ? (
+              <p>Loading table...</p>
+            ) : error ? (
+              <p style={{ color: 'red' }}>{error}</p>
+            ) : (
+              <MeasurementTable
+                measurements={filteredMeasurements}
+                onMeasurementDeleted={fetchData}
+                highlightedPoint={highlightedPoint}
+                setHighlightedPoint={setHighlightedPoint}
+              />
+            )}
+          </div>
         </div>
       </main>
     </div>
