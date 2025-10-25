@@ -1,4 +1,5 @@
 import React from 'react';
+import Select from 'react-select';
 import ManagerBox from './ManagerBox';
 
 const inputGroupStyle = {
@@ -23,8 +24,19 @@ const DataFilters = ({
   const handleClear = () => {
     setStartDate('');
     setEndDate('');
-    setChartSeriesFilter('all');
+    setChartSeriesFilter([]);
   };
+
+  const seriesOptions = seriesList.map((series) => ({
+    value: series._id,
+    label: series.name,
+  }));
+
+  const handleSeriesChange = (selectedOptions) => {
+    setChartSeriesFilter(selectedOptions ? selectedOptions.map((option) => option.value) : []);
+  };
+
+  const selectedValues = seriesOptions.filter((option) => chartSeriesFilter.includes(option.value));
 
   return (
     <ManagerBox className={className}>
@@ -49,20 +61,18 @@ const DataFilters = ({
             step="1"
           />
         </div>
-        <div style={inputGroupStyle}>
+        <div style={{ ...inputGroupStyle, width: '250px' }}>
           <label>Series:</label>
-          <select
-            value={chartSeriesFilter}
-            onChange={(e) => setChartSeriesFilter(e.target.value)}
-            style={{ ...inputStyle, width: '250px', height: '37px' }}
-          >
-            <option value="all">Show All Series</option>
-            {seriesList.map((series) => (
-              <option key={series._id} value={series._id}>
-                Show only: {series.name}
-              </option>
-            ))}
-          </select>
+          <Select
+            isMulti
+            options={seriesOptions}
+            value={selectedValues}
+            onChange={handleSeriesChange}
+            placeholder="Select series to show..."
+            closeMenuOnSelect={false}
+            menuPortalTarget={document.body}
+            menuPosition="fixed"
+          />
         </div>
 
         <button onClick={handleClear} style={{ padding: '8px 16px', height: '37px' }}>

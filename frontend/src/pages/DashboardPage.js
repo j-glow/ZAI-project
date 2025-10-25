@@ -21,7 +21,7 @@ const DashboardPage = () => {
 
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [chartSeriesFilter, setChartSeriesFilter] = useState('all');
+  const [chartSeriesFilter, setChartSeriesFilter] = useState([]);
 
   const [activeView, setActiveView] = useState('measurement');
 
@@ -56,7 +56,7 @@ const DashboardPage = () => {
 
   const chartFilteredMeasurements = useMemo(() => {
     return measurements.filter((m) => {
-      if (chartSeriesFilter !== 'all' && m.series?._id !== chartSeriesFilter) {
+      if (chartSeriesFilter.length > 0 && !chartSeriesFilter.includes(m.series?._id)) {
         return false;
       }
       if (startDate && new Date(m.timestamp) < new Date(startDate)) { return false; }
@@ -66,10 +66,10 @@ const DashboardPage = () => {
   }, [measurements, startDate, endDate, chartSeriesFilter]);
 
   const visibleSeriesList = useMemo(() => {
-    if (chartSeriesFilter === 'all') {
+    if (chartSeriesFilter.length === 0) {
       return seriesList;
     }
-    return seriesList.filter((s) => s._id === chartSeriesFilter);
+    return seriesList.filter((s) => chartSeriesFilter.includes(s._id));
   }, [seriesList, chartSeriesFilter]);
 
   const tableFilteredMeasurements = useMemo(() => {
