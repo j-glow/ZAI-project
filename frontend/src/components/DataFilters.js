@@ -30,6 +30,7 @@ const DataFilters = ({
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
             style={inputStyle}
+            step="1"
           />
         </div>
         <div style={inputGroupStyle}>
@@ -39,6 +40,7 @@ const DataFilters = ({
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
             style={inputStyle}
+            step="1"
           />
         </div>
         <div style={inputGroupStyle}>
