@@ -17,8 +17,9 @@ const thStyle = {
   zIndex: 1,
 };
 
-const valueThStyle = { ...thStyle, width: '25%' };
-const timestampThStyle = { ...thStyle, width: '55%' };
+const valueThStyle = { ...thStyle, width: '20%' };
+const seriesThStyle = { ...thStyle, width: '25%' };
+const timestampThStyle = { ...thStyle, width: '35%' };
 const actionsThStyle = { ...thStyle, width: '20%' };
 const tdStyle = {
   border: '1px solid #ddd',
@@ -88,6 +89,7 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
       <thead style={{ background: '#f4f4f4' }}>
         <tr>
           <th style={valueThStyle}>Value</th>
+          <th style={seriesThStyle}>Series</th>
           <th style={timestampThStyle}>Timestamp</th>
           <th style={actionsThStyle} className="no-print">Actions</th>
         </tr>
@@ -111,6 +113,7 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
                       style={{ width: '100%' }}
                     />
                   </td>
+                  <td style={tdStyle}>{m.series?.name || 'N/A'}</td>
                   <td style={tdStyle}>
                     <input
                       type="datetime-local"
@@ -129,6 +132,7 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
               ) : (
                 <>
                   <td style={tdStyle}>{m.value.toFixed(2)}</td>
+                  <td style={tdStyle}>{m.series?.name || 'N/A'}</td>
                   <td style={tdStyle}>{new Date(m.timestamp).toLocaleString('default', {
                     dateStyle: 'short',
                     timeStyle: 'medium',
@@ -149,7 +153,7 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
           ))
         ) : (
           <tr>
-            <td colSpan="3" style={{ ...tdStyle, textAlign: 'center', padding: '20px' }}>
+            <td colSpan="4" style={{ ...tdStyle, textAlign: 'center', padding: '20px' }}>
               No measurements found.
             </td>
           </tr>
