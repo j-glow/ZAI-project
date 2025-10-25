@@ -7,7 +7,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const { login } = useAuth();
+  const { login, loginAsGuest } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -21,6 +21,11 @@ const LoginPage = () => {
     } else {
       setError('Invalid username or password');
     }
+  };
+
+  const handleGuestLogin = () => {
+    loginAsGuest();
+    navigate('/');
   };
 
   return (
@@ -54,6 +59,9 @@ const LoginPage = () => {
           Login
         </button>
       </form>
+      <button onClick={handleGuestLogin} style={{ width: '100%', padding: '0.75rem', background: 'grey', color: 'white', border: 'none', marginTop: '1rem' }}>
+        Continue as Guest
+      </button>
     </div>
   );
 };

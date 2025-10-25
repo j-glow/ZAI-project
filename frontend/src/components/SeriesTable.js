@@ -20,7 +20,7 @@ const tdStyle = {
   textAlign: 'left',
 };
 
-const SeriesTable = ({ seriesList, measurements, onSeriesChange }) => {
+const SeriesTable = ({ seriesList, measurements, onSeriesChange, isGuest }) => {
   const { userInfo } = useAuth();
   const [editingId, setEditingId] = useState(null);
   const [editFormData, setEditFormData] = useState({
@@ -99,13 +99,13 @@ const SeriesTable = ({ seriesList, measurements, onSeriesChange }) => {
           <th style={thStyle}>Min Value</th>
           <th style={thStyle}>Max Value</th>
           <th style={thStyle}>Color</th>
-          <th style={thStyle}>Actions</th>
+          {!isGuest && <th style={thStyle}>Actions</th>}
         </tr>
       </thead>
       <tbody>
         {seriesList.map((series) => (
           <tr key={series._id}>
-            {editingId === series._id ? (
+            {editingId === series._id && !isGuest ? (
               <>
                 <td style={tdStyle}><input type="text" name="name" value={editFormData.name} onChange={handleFormChange} style={{ width: '100%' }} /></td>
                 <td style={tdStyle}><input type="number" name="min_value" value={editFormData.min_value} onChange={handleFormChange} style={{ width: '100%' }} /></td>
@@ -131,10 +131,12 @@ const SeriesTable = ({ seriesList, measurements, onSeriesChange }) => {
                     }}
                   ></div>
                 </td>
-                <td style={tdStyle}>
-                  <button onClick={() => handleEdit(series)}>Edit</button>
-                  <button onClick={() => handleDelete(series._id)} style={{ marginLeft: '5px', background: 'red', color: 'white' }}>Delete</button>
-                </td>
+                {!isGuest && (
+                  <td style={tdStyle}>
+                    <button onClick={() => handleEdit(series)}>Edit</button>
+                    <button onClick={() => handleDelete(series._id)} style={{ marginLeft: '5px', background: 'red', color: 'white' }}>Delete</button>
+                  </td>
+                )}
               </>
             )}
           </tr>

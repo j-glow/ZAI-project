@@ -23,7 +23,7 @@ const DashboardPage = () => {
   const [endDate, setEndDate] = useState('');
   const [chartSeriesFilter, setChartSeriesFilter] = useState([]);
 
-  const [activeView, setActiveView] = useState('measurement');
+  const [activeView, setActiveView] = useState(userInfo.isGuest ? 'filter' : 'measurement');
 
   const [highlightedPoint, setHighlightedPoint] = useState(null);
 
@@ -84,18 +84,22 @@ const DashboardPage = () => {
     <div className="dashboard-page no-print">
       <nav className="dashboard-nav no-print">
         <div className="dashboard-nav-tabs">
-          <button
-            className={activeView === 'series' ? 'active' : ''}
-            onClick={() => setActiveView('series')}
-          >
-            Series
-          </button>
-          <button
-            className={activeView === 'measurement' ? 'active' : ''}
-            onClick={() => setActiveView('measurement')}
-          >
-            Measurement
-          </button>
+          {!userInfo.isGuest && (
+            <>
+              <button
+                className={activeView === 'series' ? 'active' : ''}
+                onClick={() => setActiveView('series')}
+              >
+                Series
+              </button>
+              <button
+                className={activeView === 'measurement' ? 'active' : ''}
+                onClick={() => setActiveView('measurement')}
+              >
+                Measurement
+              </button>
+            </>
+          )}
           <button
             className={activeView === 'filter' ? 'active' : ''}
             onClick={() => setActiveView('filter')}
@@ -115,13 +119,13 @@ const DashboardPage = () => {
           <div className="view-manager no-print">
             {loading ? <p style={{padding: '1rem'}}>Loading controls...</p> : (
               <>
-                {activeView === 'series' && (
+                {activeView === 'series' && !userInfo.isGuest && (
                   <SeriesManager
                     seriesList={seriesList}
                     onSeriesChange={fetchData}
                   />
                 )}
-                {activeView === 'measurement' && (
+                {activeView === 'measurement' && !userInfo.isGuest && (
                   <AddMeasurementForm
                     seriesList={seriesList}
                     onMeasurementAdded={fetchData}
@@ -206,9 +210,15 @@ const DashboardPage = () => {
                     onMeasurementUpdated={fetchData}
                     highlightedPoint={highlightedPoint}
                     setHighlightedPoint={setHighlightedPoint}
+                    isGuest={userInfo.isGuest}
                   />
                 ) : (
-                  <SeriesTable seriesList={seriesList} measurements={measurements} onSeriesChange={fetchData} />
+                  <SeriesTable
+                    seriesList={seriesList}
+                    measurements={measurements}
+                    onSeriesChange={fetchData}
+                    isGuest={userInfo.isGuest}
+                  />
                 )}
               </>
             )}

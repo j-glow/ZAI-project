@@ -39,12 +39,19 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('userInfo');
   };
 
+  const loginAsGuest = () => {
+    const guestUser = { username: 'Guest', isGuest: true };
+    setUserInfo(guestUser);
+    localStorage.setItem('userInfo', JSON.stringify(guestUser));
+  };
+
   return (
     <AuthContext.Provider
       value={{
         userInfo,
         login,
         logout,
+        loginAsGuest,
       }}
     >
       {children}

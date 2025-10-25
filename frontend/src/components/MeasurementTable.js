@@ -26,7 +26,7 @@ const tdStyle = {
   padding: '10px 8px',
 };
 
-const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPoint, highlightedPoint, onMeasurementUpdated }) => {
+const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPoint, highlightedPoint, onMeasurementUpdated, isGuest }) => {
   const { userInfo } = useAuth();
   const [editingId, setEditingId] = useState(null);
   const [editFormData, setEditFormData] = useState({ value: '', timestamp: '' });
@@ -91,7 +91,7 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
           <th style={valueThStyle}>Value</th>
           <th style={seriesThStyle}>Series</th>
           <th style={timestampThStyle}>Timestamp</th>
-          <th style={actionsThStyle} className="no-print">Actions</th>
+          {!isGuest && <th style={actionsThStyle} className="no-print">Actions</th>}
         </tr>
       </thead>
       <tbody>
@@ -102,7 +102,7 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
               onClick={() => editingId !== m._id && setHighlightedPoint(m.timestamp)}
               style={m.timestamp === highlightedPoint ? { background: '#e6f7ff', cursor: 'pointer' } : { cursor: 'pointer' }}
             >
-              {editingId === m._id ? (
+              {editingId === m._id && !isGuest ? (
                 <>
                   <td style={tdStyle}>
                     <input
@@ -138,22 +138,24 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
                     timeStyle: 'medium',
                     hourCycle: 'h23',
                   })}</td>
-                  <td style={tdStyle} className="no-print">
-                    <button onClick={() => handleEdit(m)}>Edit</button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleDelete(m._id); }}
-                      style={{ marginLeft: '5px', background: 'red', color: 'white' }}
-                    >
-                      Delete
-                    </button>
-                  </td>
+                  {!isGuest && (
+                    <td style={tdStyle} className="no-print">
+                      <button onClick={() => handleEdit(m)}>Edit</button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDelete(m._id); }}
+                        style={{ marginLeft: '5px', background: 'red', color: 'white' }}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  )}
                 </>
               )}
             </tr>
           ))
         ) : (
           <tr>
-            <td colSpan="4" style={{ ...tdStyle, textAlign: 'center', padding: '20px' }}>
+            <td colSpan={!isGuest ? "4" : "3"} style={{ ...tdStyle, textAlign: 'center', padding: '20px' }}>
               No measurements found.
             </td>
           </tr>
