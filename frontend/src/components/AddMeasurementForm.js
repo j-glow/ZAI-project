@@ -30,19 +30,29 @@ const buttonStyle = {
   gridRow: '1 / 2',
 };
 
+const formatDateToLocalInput = (date) => {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const seconds = date.getSeconds().toString().padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+};
+
 const AddMeasurementForm = ({ seriesList, onMeasurementAdded, className }) => {
   const { userInfo } = useAuth();
 
   const [series, setSeries] = useState(seriesList[0]?._id || '');
   const [value, setValue] = useState('');
   const [useCurrentTime, setUseCurrentTime] = useState(true);
-  const [timestamp, setTimestamp] = useState(new Date().toISOString().slice(0, 19));
+  const [timestamp, setTimestamp] = useState(formatDateToLocalInput(new Date()));
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   useEffect(() => {
     if (useCurrentTime) {
-      setTimestamp(new Date().toISOString().slice(0, 19));
+      setTimestamp(formatDateToLocalInput(new Date()));
     }
   }, [useCurrentTime]);
 
@@ -71,14 +81,14 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded, className }) => {
         },
       };
 
-      const timestampToSend = useCurrentTime ? new Date().toISOString() : timestamp;
+      const timestampToSend = useCurrentTime ? new Date().toISOString() : new Date(timestamp).toISOString();
 
       await axios.post(
         'http://localhost:5000/api/measurements',
         {
           series,
           value: numValue,
-          timestampToSend,
+          timestamp: timestampToSend,
         },
         config
       );
@@ -88,7 +98,7 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded, className }) => {
       onMeasurementAdded();
 
       if (useCurrentTime) {
-        setTimestamp(new Date().toISOString().slice(0, 19));
+        setTimestamp(formatDateToLocalInput(new Date()));
       }
     } catch (err) {
       setError(err.response?.data || 'Failed to add measurement');

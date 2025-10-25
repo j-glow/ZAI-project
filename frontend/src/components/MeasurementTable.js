@@ -132,6 +132,7 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
                   <td style={tdStyle}>{new Date(m.timestamp).toLocaleString('default', {
                     dateStyle: 'short',
                     timeStyle: 'medium',
+                    hourCycle: 'h23',
                   })}</td>
                   <td style={tdStyle} className="no-print">
                     <button onClick={() => handleEdit(m)}>Edit</button>
