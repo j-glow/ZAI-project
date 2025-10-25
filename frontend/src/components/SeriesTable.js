@@ -20,7 +20,7 @@ const tdStyle = {
   textAlign: 'left',
 };
 
-const SeriesTable = ({ seriesList, onSeriesChange }) => {
+const SeriesTable = ({ seriesList, measurements, onSeriesChange }) => {
   const { userInfo } = useAuth();
   const [editingId, setEditingId] = useState(null);
   const [editFormData, setEditFormData] = useState({
@@ -62,7 +62,13 @@ const SeriesTable = ({ seriesList, onSeriesChange }) => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this series?')) {
+    const measurementsInSeries = measurements.filter(m => m.series?._id === id);
+    let confirmMessage = 'Are you sure you want to delete this series?';
+    if (measurementsInSeries.length > 0) {
+      confirmMessage = `This series contains ${measurementsInSeries.length} data points. Are you sure you want to delete it?`;
+    }
+
+    if (window.confirm(confirmMessage)) {
       try {
         const config = {
           headers: {

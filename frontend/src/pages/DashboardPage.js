@@ -208,7 +208,7 @@ const DashboardPage = () => {
                     setHighlightedPoint={setHighlightedPoint}
                   />
                 ) : (
-                  <SeriesTable seriesList={seriesList} onSeriesChange={fetchData} />
+                  <SeriesTable seriesList={seriesList} measurements={measurements} onSeriesChange={fetchData} />
                 )}
               </>
             )}
