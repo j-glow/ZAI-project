@@ -165,28 +165,17 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded, className }) => {
           </label>
         </div>
         <button type="submit" style={buttonStyle}>Add Measurement</button>
-        {error && (
-          <p style={{
-            color: 'red',
-            gridColumn: '2 / 3',
-            gridRow: '2 / 3',
-            alignSelf: 'flex-start',
-            margin: 0,
-          }}>
-            {error}
-          </p>
-        )}
-        {success && (
-          <p style={{
-            color: 'green',
-            gridColumn: '1 / 3',
-            gridRow: '2 / 3',
-            alignSelf: 'flex-start',
-            margin: 0,
-          }}>
-            {success}
-          </p>
-        )}
+
+        <div style={{
+          gridColumn: '1 / 3',
+          gridRow: '2 / 3',
+          minHeight: '24px',
+          alignSelf: 'flex-start',
+          margin: 0,
+        }}>
+          {error && <p style={{ color: 'red', margin: 0 }}>{error}</p>}
+          {success && <p style={{ color: 'green', margin: 0 }}>{success}</p>}
+        </div>
       </form>
     </ManagerBox>
   );

@@ -80,7 +80,10 @@ const SeriesManager = ({ onSeriesChange }) => {
           <input type="number" value={maxValue} onChange={(e) => setMaxValue(e.target.value)} style={inputStyle} required />
         </div>
         <button type="submit" style={{...buttonStyle, gridColumn: '5 / 6'}}>Add Series</button>
-        {createError && <p style={{ color: 'red', gridColumn: '1 / -1' }}>{createError}</p>}
+
+        <div style={{ gridColumn: '1 / -1', minHeight: '24px' }}>
+          {createError && <p style={{ color: 'red', margin: 0 }}>{createError}</p>}
+        </div>
       </form>
     </ManagerBox>
   );
