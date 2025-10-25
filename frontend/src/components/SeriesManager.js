@@ -69,18 +69,41 @@ const SeriesManager = ({ onSeriesChange }) => {
         </div>
         <div style={{...inputGroupStyle, gridColumn: '2 / 3'}}>
           <label>Name</label>
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)} style={inputStyle} required />
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onFocus={() => { if (name === 'New Series') setName(''); }}
+            onBlur={() => { if (name === '') setName('New Series'); }}
+            style={name === 'New Series' ? {...inputStyle, color: 'grey'} : {...inputStyle, color: 'black'}}
+            required
+          />
         </div>
         <div style={{...inputGroupStyle, gridColumn: '3 / 4'}}>
           <label>Min Value</label>
-          <input type="number" value={minValue} onChange={(e) => setMinValue(e.target.value)} style={inputStyle} required />
+          <input
+            type="number"
+            value={minValue}
+            onChange={(e) => setMinValue(e.target.value === '' ? '' : Number(e.target.value))}
+            onFocus={() => { if (minValue === 0) setMinValue(''); }}
+            onBlur={() => { if (minValue === '') setMinValue(0); }}
+            style={minValue === 0 ? {...inputStyle, color: 'grey'} : {...inputStyle, color: 'black'}}
+            required
+          />
         </div>
         <div style={{...inputGroupStyle, gridColumn: '4 / 5'}}>
           <label>Max Value</label>
-          <input type="number" value={maxValue} onChange={(e) => setMaxValue(e.target.value)} style={inputStyle} required />
+          <input
+            type="number"
+            value={maxValue}
+            onChange={(e) => setMaxValue(e.target.value === '' ? '' : Number(e.target.value))}
+            onFocus={() => { if (maxValue === 100) setMaxValue(''); }}
+            onBlur={() => { if (maxValue === '') setMaxValue(100); }}
+            style={maxValue === 100 ? {...inputStyle, color: 'grey'} : {...inputStyle, color: 'black'}}
+            required
+          />
         </div>
         <button type="submit" style={{...buttonStyle, gridColumn: '5 / 6'}}>Add Series</button>
-
         <div style={{ gridColumn: '1 / -1', minHeight: '24px' }}>
           {createError && <p style={{ color: 'red', margin: 0 }}>{createError}</p>}
         </div>
