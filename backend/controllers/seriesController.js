@@ -14,6 +14,12 @@ const createSeries = async (req, res) => {
   try {
     const { name, min_value, max_value, color } = req.body;
 
+    const seriesExists = await Series.findOne({ name });
+
+    if (seriesExists) {
+      return res.status(400).send('Series with this name already exists');
+    }
+
     const series = new Series({
       name,
       min_value,
