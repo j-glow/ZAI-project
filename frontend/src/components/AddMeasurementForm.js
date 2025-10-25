@@ -95,8 +95,19 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded, className }) => {
     }
   };
 
+  const selectedSeries = seriesList.find(s => s._id === series);
+  const placeholder = selectedSeries
+    ? `Min: ${selectedSeries.min_value}, Max: ${selectedSeries.max_value}`
+    : 'Enter value';
+
+
   return (
     <ManagerBox className={className}>
+      <style>{`
+        .value-input-placeholder::placeholder {
+          color: #aaa;
+        }
+      `}</style>
       <form onSubmit={handleSubmit} style={formStyle}>
         <div style={{...inputGroupStyle, gridColumn: '1 / 2', gridRow: '1 / 2'}}>
           <label>Series</label>
@@ -107,7 +118,7 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded, className }) => {
           >
             {seriesList.map((s) => (
               <option key={s._id} value={s._id}>
-                {s.name} (Min: {s.min_value}, Max: {s.max_value})
+                {s.name}
               </option>
             ))}
           </select>
@@ -121,6 +132,8 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded, className }) => {
             value={value}
             onChange={(e) => setValue(e.target.value)}
             style={inputStyle}
+            placeholder={placeholder}
+            className="value-input-placeholder"
             required
           />
         </div>
