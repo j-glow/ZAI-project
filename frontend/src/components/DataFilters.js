@@ -20,9 +20,15 @@ const DataFilters = ({
   setChartSeriesFilter,
   className,
 }) => {
+  const handleClear = () => {
+    setStartDate('');
+    setEndDate('');
+    setChartSeriesFilter('all');
+  };
+
   return (
     <ManagerBox className={className}>
-      <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', alignItems: 'flex-end' }}>
         <div style={inputGroupStyle}>
           <label>Start Date:</label>
           <input
@@ -48,7 +54,7 @@ const DataFilters = ({
           <select
             value={chartSeriesFilter}
             onChange={(e) => setChartSeriesFilter(e.target.value)}
-            style={{ ...inputStyle, width: '250px' }}
+            style={{ ...inputStyle, width: '250px', height: '37px' }}
           >
             <option value="all">Show All Series</option>
             {seriesList.map((series) => (
@@ -58,6 +64,10 @@ const DataFilters = ({
             ))}
           </select>
         </div>
+
+        <button onClick={handleClear} style={{ padding: '8px 16px', height: '37px' }}>
+          Clear
+        </button>
       </div>
     </ManagerBox>
   );
