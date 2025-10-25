@@ -74,10 +74,10 @@ const DashboardPage = () => {
 
   const tableFilteredMeasurements = useMemo(() => {
     if (tableSeriesFilter === 'all') {
-      return chartFilteredMeasurements;
+      return measurements;
     }
-    return chartFilteredMeasurements.filter(m => m.series?._id === tableSeriesFilter);
-  }, [chartFilteredMeasurements, tableSeriesFilter]);
+    return measurements.filter(m => m.series?._id === tableSeriesFilter);
+  }, [measurements, tableSeriesFilter]);
 
 
   return (
