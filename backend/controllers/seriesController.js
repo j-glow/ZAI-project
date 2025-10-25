@@ -14,6 +14,10 @@ const createSeries = async (req, res) => {
   try {
     const { name, min_value, max_value, color } = req.body;
 
+    if (Number(min_value) >= Number(max_value)) {
+      return res.status(400).send('Min value must be less than max value');
+    }
+
     const seriesExists = await Series.findOne({ name });
 
     if (seriesExists) {

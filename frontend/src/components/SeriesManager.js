@@ -39,6 +39,12 @@ const SeriesManager = ({ onSeriesChange }) => {
   const handleCreate = async (e) => {
     e.preventDefault();
     setCreateError('');
+
+    if (Number(minValue) >= Number(maxValue)) {
+      setCreateError('Min value must be less than max value.');
+      return;
+    }
+
     try {
       const config = {
         headers: {
