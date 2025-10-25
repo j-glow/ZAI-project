@@ -10,44 +10,65 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-const formatDataForChart = (measurements) => {
+const formatDataForChart = (measurements, seriesList) => {
+  if (!measurements.length || !seriesList.length) {
+    return [];
+  }
+
   const dataMap = new Map();
+  const allTimestamps = new Set();
 
   measurements.forEach((m) => {
-    const timestampKey = m.timestamp;
-
-    if (!dataMap.has(timestampKey)) {
-      dataMap.set(timestampKey, { timestamp: m.timestamp });
-    }
-
-    dataMap.get(timestampKey)[m.series.name] = m.value;
+    allTimestamps.add(m.timestamp);
   });
 
-  return Array.from(dataMap.values()).sort(
-    (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+  const sortedTimestamps = Array.from(allTimestamps).sort(
+    (a, b) => new Date(a) - new Date(b)
   );
+
+  sortedTimestamps.forEach((timestamp) => {
+    dataMap.set(timestamp, { timestamp: new Date(timestamp).getTime() });
+  });
+
+  measurements.forEach((m) => {
+    if (m.series && m.series._id) {
+      const entry = dataMap.get(m.timestamp);
+      if (entry) {
+        entry[m.series._id] = m.value;
+      }
+    }
+  });
+
+  return Array.from(dataMap.values());
 };
 
-const formatXAxis = (isoString) => {
-  return new Date(isoString).toLocaleString('default', {
+const formatXAxis = (unixTime) => {
+  return new Date(unixTime).toLocaleString('default', {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
   });
 };
 
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="custom-tooltip" style={{ backgroundColor: '#fff', padding: '10px', border: '1px solid #ccc' }}>
+        <p className="label">{`Time : ${formatXAxis(label)}`}</p>
+        {payload.map((pld, index) => (
+          <p key={index} style={{ color: pld.color }}>{`${pld.name} : ${pld.value}`}</p>
+        ))}
+      </div>
+    );
+  }
+
+  return null;
+};
+
 const MeasurementChart = ({ measurements, seriesList, highlightedPoint }) => {
-  const chartData = formatDataForChart(measurements);
-
-  const formattedTimestamp = highlightedPoint
-    ? new Date(highlightedPoint).toLocaleString()
-    : null;
-
-  const activeIndex = useMemo(() =>
-    formattedTimestamp
-      ? chartData.findIndex(d => d.timestamp === formattedTimestamp)
-      : -1,
-    [chartData, formattedTimestamp]
+  const chartData = useMemo(
+    () => formatDataForChart(measurements, seriesList),
+    [measurements, seriesList]
   );
 
   return (
@@ -60,21 +81,28 @@ const MeasurementChart = ({ measurements, seriesList, highlightedPoint }) => {
           left: 20,
           bottom: 5,
         }}
-        activeTooltipIndex={activeIndex === -1 ? undefined : activeIndex}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="timestamp" tickFormatter={formatXAxis} />
+        <XAxis
+          type="number"
+          dataKey="timestamp"
+          domain={['dataMin', 'dataMax']}
+          tickFormatter={formatXAxis}
+          allowDuplicatedCategory={false}
+        />
         <YAxis />
-        <Tooltip />
+        <Tooltip content={<CustomTooltip />} />
         <Legend />
 
         {seriesList.map((series) => (
           <Line
             key={series._id}
             type="monotone"
-            dataKey={series.name}
+            dataKey={series._id}
+            name={series.name}
             stroke={series.color}
             activeDot={{ r: 8 }}
+            connectNulls
           />
         ))}
       </LineChart>
