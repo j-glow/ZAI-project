@@ -220,6 +220,7 @@ const DashboardPage = () => {
                     highlightedPoint={highlightedPoint}
                     setHighlightedPoint={setHighlightedPoint}
                     isGuest={userInfo.isGuest}
+                    tableSeriesFilter={tableSeriesFilter}
                   />
                 ) : (
                   <SeriesTable

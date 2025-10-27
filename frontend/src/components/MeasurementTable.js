@@ -26,7 +26,7 @@ const tdStyle = {
   padding: '10px 8px',
 };
 
-const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPoint, highlightedPoint, onMeasurementUpdated, isGuest }) => {
+const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPoint, highlightedPoint, onMeasurementUpdated, isGuest, tableSeriesFilter }) => {
   const { userInfo } = useAuth();
   const [editingId, setEditingId] = useState(null);
   const [editFormData, setEditFormData] = useState({ value: '', timestamp: '' });
@@ -88,8 +88,8 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
     <table style={tableStyle} onMouseLeave={() => setHighlightedPoint(null)}>
       <thead style={{ background: '#f4f4f4' }}>
         <tr>
+          {tableSeriesFilter === 'all' && <th style={seriesThStyle}>Series</th>}
           <th style={valueThStyle}>Value</th>
-          <th style={seriesThStyle}>Series</th>
           <th style={timestampThStyle}>Timestamp</th>
           {!isGuest && <th style={actionsThStyle}>Actions</th>}
         </tr>
@@ -104,6 +104,7 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
             >
               {editingId === m._id && !isGuest ? (
                 <>
+                  {tableSeriesFilter === 'all' && <td style={tdStyle}>{m.series?.name || 'N/A'}</td>}
                   <td style={tdStyle}>
                     <input
                       type="number"
@@ -113,7 +114,6 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
                       style={{ width: '100%' }}
                     />
                   </td>
-                  <td style={tdStyle}>{m.series?.name || 'N/A'}</td>
                   <td style={tdStyle}>
                     <input
                       type="datetime-local"
@@ -131,8 +131,8 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
                 </>
               ) : (
                 <>
+                  {tableSeriesFilter === 'all' && <td style={tdStyle}>{m.series?.name || 'N/A'}</td>}
                   <td style={tdStyle}>{m.value.toFixed(2)}</td>
-                  <td style={tdStyle}>{m.series?.name || 'N/A'}</td>
                   <td style={tdStyle}>{new Date(m.timestamp).toLocaleString('default', {
                     dateStyle: 'short',
                     timeStyle: 'medium',
@@ -155,7 +155,7 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
           ))
         ) : (
           <tr>
-            <td colSpan={!isGuest ? "4" : "3"} style={{ ...tdStyle, textAlign: 'center', padding: '20px' }}>
+            <td colSpan={!isGuest ? (tableSeriesFilter === 'all' ? 4 : 3) : (tableSeriesFilter === 'all' ? 3 : 2)} style={{ ...tdStyle, textAlign: 'center', padding: '20px' }}>
               No measurements found.
             </td>
           </tr>
