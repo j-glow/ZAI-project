@@ -146,7 +146,7 @@ const DashboardPage = () => {
             )}
           </div>
           <div className="chart-area">
-            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '1rem', gap: '10px' }}>
+            <div className="chart-buttons" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '1rem', gap: '10px' }}>
               <button onClick={() => window.print()} style={{fontSize: '0.8rem'}}>
                 Print
               </button>

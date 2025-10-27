@@ -166,3 +166,58 @@
     min-height: 400px;
   }
 }
+
+@media print {
+  body, .dashboard-page {
+    background: #fff;
+    height: auto;
+    overflow: visible;
+  }
+
+  .dashboard-main {
+    display: block;
+    height: auto;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .dashboard-nav,
+  .view-manager,
+  .chart-buttons,
+  .table-area div:first-child,
+  .table-area button {
+    display: none !important;
+  }
+
+  .dashboard-left, .chart-area {
+    page-break-inside: avoid;
+  }
+
+  .chart-area {
+    height: 500px;
+    box-shadow: none;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+  .chart-wrapper {
+    height: 450px;
+  }
+
+  .table-area {
+    margin-top: 2rem;
+    box-shadow: none;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+  .table-scroll-wrapper {
+    overflow: visible !important;
+    height: auto !important;
+    border: none;
+  }
+
+  .table-area th:last-child,
+  .table-area td:last-child {
+    display: none !important;
+  }
+}
