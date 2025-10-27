@@ -8,9 +8,11 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  ReferenceDot,
 } from 'recharts';
 
 const formatDataForChart = (measurements, seriesList) => {
+
   if (!measurements.length || !seriesList.length) {
     return [];
   }
@@ -71,6 +73,23 @@ const MeasurementChart = ({ measurements, seriesList, highlightedPoint }) => {
     [measurements, seriesList]
   );
 
+  const highlightedDataPoint = useMemo(() => {
+    if (!highlightedPoint) return null;
+    const highlightedTimestamp = new Date(highlightedPoint).getTime();
+    return chartData.find(d => d.timestamp === highlightedTimestamp);
+  }, [chartData, highlightedPoint]);
+
+  const yValueForDot = useMemo(() => {
+    if (!highlightedDataPoint) return null;
+
+    for (const series of seriesList) {
+      if (highlightedDataPoint[series._id] !== undefined) {
+        return highlightedDataPoint[series._id];
+      }
+    }
+    return null;
+  }, [highlightedDataPoint, seriesList]);
+
   return (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart
@@ -105,6 +124,17 @@ const MeasurementChart = ({ measurements, seriesList, highlightedPoint }) => {
             connectNulls
           />
         ))}
+
+        {highlightedDataPoint && yValueForDot !== null && (
+          <ReferenceDot
+            x={highlightedDataPoint.timestamp}
+            y={yValueForDot}
+            r={8}
+            fill="red"
+            stroke="white"
+            isFront
+          />
+        )}
       </LineChart>
     </ResponsiveContainer>
   );

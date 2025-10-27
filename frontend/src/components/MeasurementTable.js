@@ -99,7 +99,7 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
           measurements.map((m) => (
             <tr
               key={m._id}
-              onClick={() => editingId !== m._id && setHighlightedPoint(m.timestamp)}
+              onMouseEnter={() => setHighlightedPoint(m.timestamp)}
               style={m.timestamp === highlightedPoint ? { background: '#e6f7ff', cursor: 'pointer' } : { cursor: 'pointer' }}
             >
               {editingId === m._id && !isGuest ? (
