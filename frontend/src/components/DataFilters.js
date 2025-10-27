@@ -2,11 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import ManagerBox from './ManagerBox';
 
-const inputGroupStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '5px',
-};
 const inputStyle = {
   padding: '5px',
 };
