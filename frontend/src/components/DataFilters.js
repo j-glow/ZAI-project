@@ -11,6 +11,12 @@ const inputStyle = {
   padding: '5px',
 };
 
+const dateInputRowStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '10px',
+};
+
 const DataFilters = ({
   startDate,
   setStartDate,
@@ -41,25 +47,27 @@ const DataFilters = ({
   return (
     <ManagerBox className={className}>
       <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', alignItems: 'flex-end' }}>
-        <div style={inputGroupStyle}>
-          <label>Start Date:</label>
-          <input
-            type="datetime-local"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            style={inputStyle}
-            step="1"
-          />
-        </div>
-        <div style={inputGroupStyle}>
-          <label>End Date:</label>
-          <input
-            type="datetime-local"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            style={inputStyle}
-            step="1"
-          />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={dateInputRowStyle}>
+            <label>Start:</label>
+            <input
+              type="datetime-local"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              style={inputStyle}
+              step="1"
+            />
+          </div>
+          <div style={dateInputRowStyle}>
+            <label>Stop:</label>
+            <input
+              type="datetime-local"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              style={inputStyle}
+              step="1"
+            />
+          </div>
         </div>
         <div style={{ ...inputGroupStyle, width: '250px' }}>
           <label>Series:</label>
