@@ -91,7 +91,7 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
           <th style={valueThStyle}>Value</th>
           <th style={seriesThStyle}>Series</th>
           <th style={timestampThStyle}>Timestamp</th>
-          {!isGuest && <th style={actionsThStyle} className="no-print">Actions</th>}
+          {!isGuest && <th style={actionsThStyle}>Actions</th>}
         </tr>
       </thead>
       <tbody>
@@ -124,7 +124,7 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
                       step="any"
                     />
                   </td>
-                  <td style={tdStyle} className="no-print">
+                  <td style={tdStyle}>
                     <button onClick={() => handleUpdate(m._id)}>Save</button>
                     <button onClick={handleCancel} style={{ marginLeft: '5px' }}>Cancel</button>
                   </td>
@@ -139,7 +139,7 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
                     hourCycle: 'h23',
                   })}</td>
                   {!isGuest && (
-                    <td style={tdStyle} className="no-print">
+                    <td style={tdStyle}>
                       <button onClick={() => handleEdit(m)}>Edit</button>
                       <button
                         onClick={(e) => { e.stopPropagation(); handleDelete(m._id); }}

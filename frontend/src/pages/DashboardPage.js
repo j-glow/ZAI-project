@@ -81,8 +81,8 @@ const DashboardPage = () => {
 
 
   return (
-    <div className="dashboard-page no-print">
-      <nav className="dashboard-nav no-print">
+    <div className="dashboard-page">
+      <nav className="dashboard-nav">
         <div className="dashboard-nav-tabs">
           {!userInfo.isGuest && (
             <>
@@ -116,7 +116,7 @@ const DashboardPage = () => {
       </nav>
       <main className="dashboard-main">
         <div className="dashboard-left">
-          <div className="view-manager no-print">
+          <div className="view-manager">
             {loading ? <p style={{padding: '1rem'}}>Loading controls...</p> : (
               <>
                 {activeView === 'series' && !userInfo.isGuest && (
@@ -146,7 +146,7 @@ const DashboardPage = () => {
             )}
           </div>
           <div className="chart-area">
-            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '1rem', gap: '10px' }} className="no-print">
+            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '1rem', gap: '10px' }}>
               <button onClick={() => window.print()} style={{fontSize: '0.8rem'}}>
                 Print
               </button>
@@ -174,7 +174,7 @@ const DashboardPage = () => {
                 <select
                   value={tableMode}
                   onChange={(e) => setTableMode(e.target.value)}
-                  className={`no-print table-mode-select ${tableMode === 'series' ? 'series-mode' : ''}`}
+                  className={`table-mode-select ${tableMode === 'series' ? 'series-mode' : ''}`}
                 >
                   <option value="data">Data</option>
                   <option value="series">Series</option>
@@ -183,7 +183,7 @@ const DashboardPage = () => {
                   value={tableSeriesFilter}
                   onChange={(e) => setTableSeriesFilter(e.target.value)}
                   style={{ padding: '5px' }}
-                  className={`no-print ${tableMode === 'series' ? 'series-mode-disabled' : ''}`}
+                  className={`${tableMode === 'series' ? 'series-mode-disabled' : ''}`}
                   disabled={tableMode === 'series'}
                 >
                   <option value="all">Show All Series</option>

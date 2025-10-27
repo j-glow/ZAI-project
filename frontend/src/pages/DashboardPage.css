@@ -141,22 +141,28 @@
   cursor: not-allowed;
 }
 
-@media print {
-  .no-print, .dashboard-nav {
-    display: none !important;
-  }
-  .dashboard-main {
-    display: block;
-    padding: 0;
-  }
-  .chart-area, .table-area {
-    width: 100%;
-    box-shadow: none;
-    border: 1px solid #000;
-    page-break-inside: avoid;
-  }
-  .table-scroll-wrapper {
-    overflow: visible;
+@media (max-aspect-ratio: 1/1) {
+  .dashboard-page {
     height: auto;
+    overflow-y: auto;
+  }
+
+  .dashboard-main {
+    grid-template-columns: 1fr;
+    height: auto;
+    overflow: visible;
+  }
+
+  .dashboard-left {
+    grid-row: auto;
+  }
+
+  .table-area {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .chart-area {
+    min-height: 400px;
   }
 }
