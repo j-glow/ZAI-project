@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import ManagerBox from './ManagerBox';
 
@@ -27,6 +27,16 @@ const DataFilters = ({
   setChartSeriesFilter,
   className,
 }) => {
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
+      setError('Stop date cannot be earlier than the start date.');
+    } else {
+      setError('');
+    }
+  }, [startDate, endDate]);
+
   const handleClear = () => {
     setStartDate('');
     setEndDate('');
@@ -46,7 +56,7 @@ const DataFilters = ({
 
   return (
     <ManagerBox className={className}>
-      <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', alignItems: 'flex-end' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'auto auto auto', gap: '20px', alignItems: 'center' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <div style={dateInputRowStyle}>
             <label>Start:</label>
@@ -54,7 +64,7 @@ const DataFilters = ({
               type="datetime-local"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              style={inputStyle}
+              style={error ? { ...inputStyle, borderColor: 'red' } : inputStyle}
               step="1"
             />
           </div>
@@ -64,23 +74,27 @@ const DataFilters = ({
               type="datetime-local"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              style={inputStyle}
+              style={error ? { ...inputStyle, borderColor: 'red' } : inputStyle}
               step="1"
             />
           </div>
         </div>
-        <div style={{ ...inputGroupStyle, width: '250px' }}>
-          <label>Series:</label>
-          <Select
-            isMulti
-            options={seriesOptions}
-            value={selectedValues}
-            onChange={handleSeriesChange}
-            placeholder="Select series to show..."
-            closeMenuOnSelect={false}
-            menuPortalTarget={document.body}
-            menuPosition="fixed"
-          />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '250px' }}>
+          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px' }}>
+            <label>Series:</label>
+            <div style={{ flex: 1 }}>
+              <Select
+                isMulti
+                options={seriesOptions}
+                value={selectedValues}
+                onChange={handleSeriesChange}
+                placeholder="Select series to show..."
+                closeMenuOnSelect={false}
+                menuPortalTarget={document.body}
+                menuPosition="fixed"
+              />
+            </div>
+          </div>
         </div>
 
         <button onClick={handleClear} style={{ padding: '8px 16px', height: '37px' }}>
