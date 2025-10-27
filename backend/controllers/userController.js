@@ -49,16 +49,28 @@ const authUser = async (req, res) => {
 };
 
 const changePassword = async (req, res) => {
-  const { newPassword } = req.body;
+  const { oldPassword, newPassword } = req.body;
   const user = await User.findById(req.user._id);
 
-  if (user && newPassword) {
-    user.password = newPassword;
-    await user.save();
-    res.send('Password updated successfully');
-  } else {
-    res.status(400).send('User not found or no new password provided');
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
   }
+
+  if (!(await user.matchPassword(oldPassword))) {
+    return res.status(401).json({ message: 'Invalid old password' });
+  }
+
+  if (await user.matchPassword(newPassword)) {
+    return res.status(400).json({ message: 'New password cannot be the same as the old password.' });
+  }
+
+  if (newPassword.length < 6) {
+    return res.status(400).json({ message: 'Password must be at least 6 characters long.' });
+  }
+
+  user.password = newPassword;
+  await user.save();
+  res.status(200).json({ message: 'Password updated successfully' });
 };
 
 

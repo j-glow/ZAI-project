@@ -8,8 +8,10 @@ import SeriesTable from '../components/SeriesTable';
 import AddMeasurementForm from '../components/AddMeasurementForm';
 import SeriesManager from '../components/SeriesManager';
 import DataFilters from '../components/DataFilters';
+import ChangePassword from '../components/ChangePassword';
 
 import './DashboardPage.css';
+import '../components/ChangePassword.css';
 
 const DashboardPage = () => {
   const { userInfo, logout } = useAuth();
@@ -30,6 +32,7 @@ const DashboardPage = () => {
   const [tableSeriesFilter, setTableSeriesFilter] = useState('all');
 
   const [tableMode, setTableMode] = useState('data');
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
@@ -109,11 +112,17 @@ const DashboardPage = () => {
         </div>
         <div className="dashboard-nav-user">
           <span>Logged in as: <strong>{userInfo.username}</strong></span>
+          {!userInfo.isGuest && (
+            <button onClick={() => setShowChangePassword(true)}>
+              Change Password
+            </button>
+          )}
           <button onClick={logout}>
             Logout
           </button>
         </div>
       </nav>
+      {showChangePassword && <ChangePassword setShowChangePassword={setShowChangePassword} />}
       <main className="dashboard-main">
         <div className="dashboard-left">
           <div className="view-manager">
