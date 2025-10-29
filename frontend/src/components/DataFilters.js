@@ -18,8 +18,12 @@ const DataFilters = ({
   endDate,
   setEndDate,
   seriesList,
-  chartSeriesFilter,
-  setChartSeriesFilter,
+  seriesFilter,
+  setSeriesFilter,
+  filterChart,
+  setFilterChart,
+  filterTable,
+  setFilterTable,
   className,
 }) => {
   const [error, setError] = useState('');
@@ -35,7 +39,7 @@ const DataFilters = ({
   const handleClear = () => {
     setStartDate('');
     setEndDate('');
-    setChartSeriesFilter([]);
+    setSeriesFilter([]);
   };
 
   const seriesOptions = seriesList.map((series) => ({
@@ -44,14 +48,14 @@ const DataFilters = ({
   }));
 
   const handleSeriesChange = (selectedOptions) => {
-    setChartSeriesFilter(selectedOptions ? selectedOptions.map((option) => option.value) : []);
+    setSeriesFilter(selectedOptions ? selectedOptions.map((option) => option.value) : []);
   };
 
-  const selectedValues = seriesOptions.filter((option) => chartSeriesFilter.includes(option.value));
+  const selectedValues = seriesOptions.filter((option) => seriesFilter.includes(option.value));
 
   return (
     <ManagerBox className={className}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'auto auto auto', gap: '20px', alignItems: 'center' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr auto auto', gap: '20px', alignItems: 'center' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <div style={dateInputRowStyle}>
             <label>Start:</label>
@@ -90,6 +94,26 @@ const DataFilters = ({
               />
             </div>
           </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', borderLeft: '1px solid #ccc', paddingLeft: '20px' }}>
+          <label>Apply filters to:</label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <input
+              type="checkbox"
+              checked={filterChart}
+              onChange={(e) => setFilterChart(e.target.checked)}
+            />
+            Chart
+          </label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <input
+              type="checkbox"
+              checked={filterTable}
+              onChange={(e) => setFilterTable(e.target.checked)}
+            />
+            Table
+          </label>
         </div>
 
         <button onClick={handleClear} style={{ padding: '8px 16px', height: '37px' }}>

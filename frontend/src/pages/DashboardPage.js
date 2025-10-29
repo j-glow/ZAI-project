@@ -23,14 +23,13 @@ const DashboardPage = () => {
 
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [chartSeriesFilter, setChartSeriesFilter] = useState([]);
+  const [seriesFilter, setSeriesFilter] = useState([]);
+  const [filterChart, setFilterChart] = useState(true);
+  const [filterTable, setFilterTable] = useState(true);
 
   const [activeView, setActiveView] = useState(userInfo.isGuest ? 'filter' : 'measurement');
 
   const [highlightedPoint, setHighlightedPoint] = useState(null);
-
-  const [tableSeriesFilter, setTableSeriesFilter] = useState('all');
-
   const [tableMode, setTableMode] = useState('data');
   const [showChangePassword, setShowChangePassword] = useState(false);
 
@@ -59,28 +58,40 @@ const DashboardPage = () => {
 
   const chartFilteredMeasurements = useMemo(() => {
     return measurements.filter((m) => {
-      if (chartSeriesFilter.length > 0 && !chartSeriesFilter.includes(m.series?.id)) {
-        return false;
+      const measurementTimestamp = new Date(m.timestamp);
+
+      if (filterChart) {
+        if (seriesFilter.length > 0 && !seriesFilter.includes(m.series?.id)) {
+          return false;
+        }
+        if (startDate && measurementTimestamp < new Date(startDate)) { return false; }
+        if (endDate && measurementTimestamp > new Date(endDate)) { return false; }
       }
-      if (startDate && new Date(m.timestamp) < new Date(startDate)) { return false; }
-      if (endDate && new Date(m.timestamp) > new Date(endDate)) { return false; }
       return true;
     });
-  }, [measurements, startDate, endDate, chartSeriesFilter]);
+  }, [measurements, startDate, endDate, seriesFilter, filterChart]);
 
   const visibleSeriesList = useMemo(() => {
-    if (chartSeriesFilter.length === 0) {
+    if (!filterChart || seriesFilter.length === 0) {
       return seriesList;
     }
-    return seriesList.filter((s) => chartSeriesFilter.includes(s.id));
-  }, [seriesList, chartSeriesFilter]);
+    return seriesList.filter((s) => seriesFilter.includes(s.id));
+  }, [seriesList, seriesFilter, filterChart]);
 
   const tableFilteredMeasurements = useMemo(() => {
-    if (tableSeriesFilter === 'all') {
-      return measurements;
-    }
-    return measurements.filter(m => m.series?.id === tableSeriesFilter);
-  }, [measurements, tableSeriesFilter]);
+    return measurements.filter((m) => {
+      const measurementTimestamp = new Date(m.timestamp);
+
+      if (filterTable) {
+        if (seriesFilter.length > 0 && !seriesFilter.includes(m.series?.id)) {
+          return false;
+        }
+        if (startDate && measurementTimestamp < new Date(startDate)) { return false; }
+        if (endDate && measurementTimestamp > new Date(endDate)) { return false; }
+      }
+      return true;
+    });
+  }, [measurements, seriesFilter, filterTable, startDate, endDate]);
 
 
   return (
@@ -147,8 +158,12 @@ const DashboardPage = () => {
                     endDate={endDate}
                     setEndDate={setEndDate}
                     seriesList={seriesList}
-                    chartSeriesFilter={chartSeriesFilter}
-                    setChartSeriesFilter={setChartSeriesFilter}
+                    seriesFilter={seriesFilter}
+                    setSeriesFilter={setSeriesFilter}
+                    filterChart={filterChart}
+                    setFilterChart={setFilterChart}
+                    filterTable={filterTable}
+                    setFilterTable={setFilterTable}
                   />
                 )}
               </>
@@ -188,20 +203,6 @@ const DashboardPage = () => {
                   <option value="data">Data</option>
                   <option value="series">Series</option>
                 </select>
-                <select
-                  value={tableSeriesFilter}
-                  onChange={(e) => setTableSeriesFilter(e.target.value)}
-                  style={{ padding: '5px' }}
-                  className={`${tableMode === 'series' ? 'series-mode-disabled' : ''}`}
-                  disabled={tableMode === 'series'}
-                >
-                  <option value="all">Show All Series</option>
-                  {seriesList.map((series) => (
-                    <option key={series.id} value={series.id}>
-                      Show only: {series.name}
-                    </option>
-                  ))}
-                </select>
               </>
             )}
           </div>
@@ -221,7 +222,7 @@ const DashboardPage = () => {
                     highlightedPoint={highlightedPoint}
                     setHighlightedPoint={setHighlightedPoint}
                     isGuest={userInfo.isGuest}
-                    tableSeriesFilter={tableSeriesFilter}
+                    seriesFilter={seriesFilter}
                   />
                 ) : (
                   <SeriesTable

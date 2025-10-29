@@ -132,10 +132,6 @@
   padding: 5px;
 }
 
-.table-mode-select.series-mode {
-  background-color: lightgray;
-}
-
 .series-mode-disabled {
   background-color: lightgray;
   cursor: not-allowed;
