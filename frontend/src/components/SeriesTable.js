@@ -52,7 +52,7 @@ const SeriesTable = ({ seriesList, measurements, onSeriesChange, isGuest }) => {
           Authorization: `Bearer ${userInfo.token}`,
         },
       };
-      await axios.put(`http://localhost:5000/api/series/${id}`, editFormData, config);
+      await axios.put(`${process.env.REACT_APP_API_URL}/series/${id}`, editFormData, config);
       setEditingId(null);
       onSeriesChange();
     } catch (error) {
@@ -75,7 +75,7 @@ const SeriesTable = ({ seriesList, measurements, onSeriesChange, isGuest }) => {
             Authorization: `Bearer ${userInfo.token}`,
           },
         };
-        await axios.delete(`http://localhost:5000/api/series/${id}`, config);
+        await axios.delete(`${process.env.REACT_APP_API_URL}/series/${id}`, config);
         onSeriesChange();
       } catch (error) {
         console.error('Failed to delete series', error);

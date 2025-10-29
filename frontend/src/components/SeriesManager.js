@@ -53,7 +53,7 @@ const SeriesManager = ({ onSeriesChange }) => {
         },
       };
       await axios.post(
-        'http://localhost:5000/api/series',
+        `${process.env.REACT_APP_API_URL}/series`,
         { name, min_value: minValue, max_value: maxValue, color },
         config
       );

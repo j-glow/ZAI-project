@@ -33,7 +33,7 @@ const ChangePassword = ({ setShowChangePassword }) => {
           Authorization: `Bearer ${userInfo.token}`,
         },
       };
-      await axios.put('http://localhost:5000/api/users/password', {
+      await axios.put(`${process.env.REACT_APP_API_URL}/users/password`, {
         oldPassword,
         newPassword,
       }, config);

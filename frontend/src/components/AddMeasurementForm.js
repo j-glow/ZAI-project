@@ -84,7 +84,7 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded, className }) => {
       const timestampToSend = useCurrentTime ? new Date().toISOString() : new Date(timestamp).toISOString();
 
       await axios.post(
-        'http://localhost:5000/api/measurements',
+        `${process.env.REACT_APP_API_URL}/measurements`,
         {
           series,
           value: numValue,

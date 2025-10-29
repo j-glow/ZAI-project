@@ -39,8 +39,8 @@ const DashboardPage = () => {
       setError('');
 
       const [seriesRes, measurementsRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/series'),
-        axios.get('http://localhost:5000/api/measurements')
+        axios.get(`${process.env.REACT_APP_API_URL}/series`),
+        axios.get(`${process.env.REACT_APP_API_URL}/measurements`)
       ]);
 
       setSeriesList(seriesRes.data);

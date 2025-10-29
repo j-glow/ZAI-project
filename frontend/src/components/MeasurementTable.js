@@ -51,7 +51,7 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
           Authorization: `Bearer ${userInfo.token}`,
         },
       };
-      await axios.put(`http://localhost:5000/api/measurements/${id}`, editFormData, config);
+      await axios.put(`${process.env.REACT_APP_API_URL}/measurements/${id}`, editFormData, config);
       setEditingId(null);
       onMeasurementUpdated();
     } catch (error) {
@@ -75,7 +75,7 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
             Authorization: `Bearer ${userInfo.token}`,
           },
         };
-        await axios.delete(`http://localhost:5000/api/measurements/${id}`, config);
+        await axios.delete(`${process.env.REACT_APP_API_URL}/measurements/${id}`, config);
         onMeasurementDeleted();
       } catch (error) {
         console.error('Failed to delete measurement', error);
