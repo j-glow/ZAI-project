@@ -26,16 +26,17 @@ const tdStyle = {
   padding: '10px 8px',
 };
 
-const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPoint, highlightedPoint, onMeasurementUpdated, isGuest, tableSeriesFilter }) => {
+const MeasurementTable = ({ measurements, seriesList, onMeasurementDeleted, setHighlightedPoint, highlightedPoint, onMeasurementUpdated, isGuest, tableSeriesFilter }) => {
   const { userInfo } = useAuth();
   const [editingId, setEditingId] = useState(null);
-  const [editFormData, setEditFormData] = useState({ value: '', timestamp: '' });
+  const [editFormData, setEditFormData] = useState({ value: '', timestamp: '', seriesId: '' });
 
   const handleEdit = (measurement) => {
     setEditingId(measurement.id);
     setEditFormData({
       value: measurement.value,
       timestamp: new Date(measurement.timestamp).toISOString().slice(0, 19),
+      seriesId: measurement.series.id,
     });
   };
 
@@ -104,7 +105,22 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
             >
               {editingId === m.id && !isGuest ? (
                 <>
-                  {tableSeriesFilter === 'all' && <td style={tdStyle}>{m.series?.name || 'N/A'}</td>}
+                  {tableSeriesFilter === 'all' && (
+                    <td style={tdStyle}>
+                      <select
+                        name="seriesId"
+                        value={editFormData.seriesId}
+                        onChange={handleFormChange}
+                        style={{ width: '100%' }}
+                      >
+                        {seriesList.map((s) => (
+                          <option key={s.id} value={s.id}>
+                            {s.name}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                  )}
                   <td style={tdStyle}>
                     <input
                       type="number"

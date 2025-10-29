@@ -215,6 +215,7 @@ const DashboardPage = () => {
                 {tableMode === 'data' ? (
                   <MeasurementTable
                     measurements={tableFilteredMeasurements}
+                    seriesList={seriesList}
                     onMeasurementDeleted={fetchData}
                     onMeasurementUpdated={fetchData}
                     highlightedPoint={highlightedPoint}
