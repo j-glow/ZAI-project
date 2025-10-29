@@ -86,8 +86,16 @@ const MeasurementTable = ({ measurements, seriesList, onMeasurementDeleted, setH
     }
   };
 
+  const handleRowClick = (timestamp) => {
+    if (highlightedPoint === timestamp) {
+      setHighlightedPoint(null);
+    } else {
+      setHighlightedPoint(timestamp);
+    }
+  };
+
   return (
-    <table style={tableStyle} onMouseLeave={() => setHighlightedPoint(null)}>
+    <table style={tableStyle}>
       <thead style={{ background: '#f4f4f4' }}>
         <tr>
           {tableSeriesFilter === 'all' && <th style={seriesThStyle}>Series</th>}
@@ -101,7 +109,7 @@ const MeasurementTable = ({ measurements, seriesList, onMeasurementDeleted, setH
           measurements.map((m) => (
             <tr
               key={m.id}
-              onMouseEnter={() => setHighlightedPoint(m.timestamp)}
+              onClick={() => handleRowClick(m.timestamp)}
               style={m.timestamp === highlightedPoint ? { background: '#e6f7ff', cursor: 'pointer' } : { cursor: 'pointer' }}
             >
               {editingId === m.id && !isGuest ? (
