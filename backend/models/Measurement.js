@@ -19,7 +19,7 @@ Measurement.init({
   modelName: 'Measurement'
 });
 
-Measurement.belongsTo(Series, { foreignKey: 'seriesId' });
+Measurement.belongsTo(Series, { foreignKey: 'seriesId', as: 'series' });
 Series.hasMany(Measurement, { foreignKey: 'seriesId' });
 
 module.exports = Measurement;

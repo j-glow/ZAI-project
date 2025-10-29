@@ -24,7 +24,7 @@ const getMeasurements = async (req, res) => {
 
     const measurements = await Measurement.findAll({
       where: filter,
-      include: [{ model: Series, attributes: ['name', 'color'] }],
+      include: [{ model: Series, as: 'series', attributes: ['name', 'color'] }],
       order: [['timestamp', 'DESC']],
     });
 
