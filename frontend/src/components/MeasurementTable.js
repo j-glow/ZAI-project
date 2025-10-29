@@ -32,7 +32,7 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
   const [editFormData, setEditFormData] = useState({ value: '', timestamp: '' });
 
   const handleEdit = (measurement) => {
-    setEditingId(measurement._id);
+    setEditingId(measurement.id);
     setEditFormData({
       value: measurement.value,
       timestamp: new Date(measurement.timestamp).toISOString().slice(0, 19),
@@ -98,11 +98,11 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
         {measurements.length > 0 ? (
           measurements.map((m) => (
             <tr
-              key={m._id}
+              key={m.id}
               onMouseEnter={() => setHighlightedPoint(m.timestamp)}
               style={m.timestamp === highlightedPoint ? { background: '#e6f7ff', cursor: 'pointer' } : { cursor: 'pointer' }}
             >
-              {editingId === m._id && !isGuest ? (
+              {editingId === m.id && !isGuest ? (
                 <>
                   {tableSeriesFilter === 'all' && <td style={tdStyle}>{m.series?.name || 'N/A'}</td>}
                   <td style={tdStyle}>
@@ -125,7 +125,7 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
                     />
                   </td>
                   <td style={tdStyle}>
-                    <button onClick={() => handleUpdate(m._id)}>Save</button>
+                    <button onClick={() => handleUpdate(m.id)}>Save</button>
                     <button onClick={handleCancel} style={{ marginLeft: '5px' }}>Cancel</button>
                   </td>
                 </>
@@ -142,7 +142,7 @@ const MeasurementTable = ({ measurements, onMeasurementDeleted, setHighlightedPo
                     <td style={tdStyle}>
                       <button onClick={() => handleEdit(m)}>Edit</button>
                       <button
-                        onClick={(e) => { e.stopPropagation(); handleDelete(m._id); }}
+                        onClick={(e) => { e.stopPropagation(); handleDelete(m.id); }}
                         style={{ marginLeft: '5px', background: 'red', color: 'white' }}
                       >
                         Delete

@@ -43,7 +43,7 @@ const formatDateToLocalInput = (date) => {
 const AddMeasurementForm = ({ seriesList, onMeasurementAdded, className }) => {
   const { userInfo } = useAuth();
 
-  const [series, setSeries] = useState(seriesList[0]?._id || '');
+  const [series, setSeries] = useState(seriesList[0]?.id || '');
   const [value, setValue] = useState('');
   const [useCurrentTime, setUseCurrentTime] = useState(true);
   const [timestamp, setTimestamp] = useState(formatDateToLocalInput(new Date()));
@@ -64,7 +64,7 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded, className }) => {
     if (!series) {
       return setError('Please select a series.');
     }
-    const selectedSeries = seriesList.find(s => s._id === series);
+    const selectedSeries = seriesList.find(s => s.id === series);
     const numValue = parseFloat(value);
 
     if (numValue < selectedSeries.min_value || numValue > selectedSeries.max_value) {
@@ -105,7 +105,7 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded, className }) => {
     }
   };
 
-  const selectedSeries = seriesList.find(s => s._id === series);
+  const selectedSeries = seriesList.find(s => s.id === series);
   const placeholder = selectedSeries
     ? `Min: ${selectedSeries.min_value}, Max: ${selectedSeries.max_value}`
     : 'Enter value';
@@ -127,7 +127,7 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded, className }) => {
             style={inputStyle}
           >
             {seriesList.map((s) => (
-              <option key={s._id} value={s._id}>
+              <option key={s.id} value={s.id}>
                 {s.name}
               </option>
             ))}

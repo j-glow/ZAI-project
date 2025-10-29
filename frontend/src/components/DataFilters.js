@@ -39,7 +39,7 @@ const DataFilters = ({
   };
 
   const seriesOptions = seriesList.map((series) => ({
-    value: series._id,
+    value: series.id,
     label: series.name,
   }));
 

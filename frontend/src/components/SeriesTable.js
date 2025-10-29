@@ -31,7 +31,7 @@ const SeriesTable = ({ seriesList, measurements, onSeriesChange, isGuest }) => {
   });
 
   const handleEdit = (series) => {
-    setEditingId(series._id);
+    setEditingId(series.id);
     setEditFormData({
       name: series.name,
       min_value: series.min_value,
@@ -62,7 +62,7 @@ const SeriesTable = ({ seriesList, measurements, onSeriesChange, isGuest }) => {
   };
 
   const handleDelete = async (id) => {
-    const measurementsInSeries = measurements.filter(m => m.series?._id === id);
+    const measurementsInSeries = measurements.filter(m => m.series?.id === id);
     let confirmMessage = 'Are you sure you want to delete this series?';
     if (measurementsInSeries.length > 0) {
       confirmMessage = `This series contains ${measurementsInSeries.length} data points. Are you sure you want to delete it?`;
@@ -104,15 +104,15 @@ const SeriesTable = ({ seriesList, measurements, onSeriesChange, isGuest }) => {
       </thead>
       <tbody>
         {seriesList.map((series) => (
-          <tr key={series._id}>
-            {editingId === series._id && !isGuest ? (
+          <tr key={series.id}>
+            {editingId === series.id && !isGuest ? (
               <>
                 <td style={tdStyle}><input type="text" name="name" value={editFormData.name} onChange={handleFormChange} style={{ width: '100%' }} /></td>
                 <td style={tdStyle}><input type="number" name="min_value" value={editFormData.min_value} onChange={handleFormChange} style={{ width: '100%' }} /></td>
                 <td style={tdStyle}><input type="number" name="max_value" value={editFormData.max_value} onChange={handleFormChange} style={{ width: '100%' }} /></td>
                 <td style={tdStyle}><input type="color" name="color" value={editFormData.color} onChange={handleFormChange} style={{ width: '100%' }} /></td>
                 <td style={tdStyle}>
-                  <button onClick={() => handleUpdate(series._id)}>Save</button>
+                  <button onClick={() => handleUpdate(series.id)}>Save</button>
                   <button onClick={handleCancel} style={{ marginLeft: '5px' }}>Cancel</button>
                 </td>
               </>
@@ -134,7 +134,7 @@ const SeriesTable = ({ seriesList, measurements, onSeriesChange, isGuest }) => {
                 {!isGuest && (
                   <td style={tdStyle}>
                     <button onClick={() => handleEdit(series)}>Edit</button>
-                    <button onClick={() => handleDelete(series._id)} style={{ marginLeft: '5px', background: 'red', color: 'white' }}>Delete</button>
+                    <button onClick={() => handleDelete(series.id)} style={{ marginLeft: '5px', background: 'red', color: 'white' }}>Delete</button>
                   </td>
                 )}
               </>

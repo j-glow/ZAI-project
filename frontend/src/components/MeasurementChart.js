@@ -33,10 +33,10 @@ const formatDataForChart = (measurements, seriesList) => {
   });
 
   measurements.forEach((m) => {
-    if (m.series && m.series._id) {
+    if (m.series && m.series.id) {
       const entry = dataMap.get(m.timestamp);
       if (entry) {
-        entry[m.series._id] = m.value;
+        entry[m.series.id] = parseFloat(m.value);
       }
     }
   });
@@ -83,8 +83,8 @@ const MeasurementChart = ({ measurements, seriesList, highlightedPoint }) => {
     if (!highlightedDataPoint) return null;
 
     for (const series of seriesList) {
-      if (highlightedDataPoint[series._id] !== undefined) {
-        return highlightedDataPoint[series._id];
+      if (highlightedDataPoint[series.id] !== undefined) {
+        return highlightedDataPoint[series.id];
       }
     }
     return null;
@@ -115,9 +115,9 @@ const MeasurementChart = ({ measurements, seriesList, highlightedPoint }) => {
 
         {seriesList.map((series) => (
           <Line
-            key={series._id}
+            key={series.id}
             type="monotone"
-            dataKey={series._id}
+            dataKey={series.id}
             name={series.name}
             stroke={series.color}
             activeDot={{ r: 8 }}

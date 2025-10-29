@@ -59,7 +59,7 @@ const DashboardPage = () => {
 
   const chartFilteredMeasurements = useMemo(() => {
     return measurements.filter((m) => {
-      if (chartSeriesFilter.length > 0 && !chartSeriesFilter.includes(m.series?._id)) {
+      if (chartSeriesFilter.length > 0 && !chartSeriesFilter.includes(m.series?.id)) {
         return false;
       }
       if (startDate && new Date(m.timestamp) < new Date(startDate)) { return false; }
@@ -72,14 +72,14 @@ const DashboardPage = () => {
     if (chartSeriesFilter.length === 0) {
       return seriesList;
     }
-    return seriesList.filter((s) => chartSeriesFilter.includes(s._id));
+    return seriesList.filter((s) => chartSeriesFilter.includes(s.id));
   }, [seriesList, chartSeriesFilter]);
 
   const tableFilteredMeasurements = useMemo(() => {
     if (tableSeriesFilter === 'all') {
       return measurements;
     }
-    return measurements.filter(m => m.series?._id === tableSeriesFilter);
+    return measurements.filter(m => m.series?.id === tableSeriesFilter);
   }, [measurements, tableSeriesFilter]);
 
 
@@ -197,7 +197,7 @@ const DashboardPage = () => {
                 >
                   <option value="all">Show All Series</option>
                   {seriesList.map((series) => (
-                    <option key={series._id} value={series._id}>
+                    <option key={series.id} value={series.id}>
                       Show only: {series.name}
                     </option>
                   ))}
