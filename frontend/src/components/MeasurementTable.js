@@ -197,4 +197,4 @@ const MeasurementTable = ({ measurements, seriesList, onMeasurementDeleted, setH
   );
 };
 
-export default MeasurementTable;
+export default React.memo(MeasurementTable);

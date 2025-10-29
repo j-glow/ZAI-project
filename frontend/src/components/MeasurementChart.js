@@ -12,36 +12,30 @@ import {
 } from 'recharts';
 
 const formatDataForChart = (measurements, seriesList) => {
-
   if (!measurements.length || !seriesList.length) {
     return [];
   }
 
   const dataMap = new Map();
-  const allTimestamps = new Set();
 
-  measurements.forEach((m) => {
-    allTimestamps.add(m.timestamp);
-  });
-
-  const sortedTimestamps = Array.from(allTimestamps).sort(
-    (a, b) => new Date(a) - new Date(b)
-  );
-
-  sortedTimestamps.forEach((timestamp) => {
-    dataMap.set(timestamp, { timestamp: new Date(timestamp).getTime() });
-  });
-
+  // Single pass through measurements to build the data map
   measurements.forEach((m) => {
     if (m.series && m.series.id) {
-      const entry = dataMap.get(m.timestamp);
-      if (entry) {
-        entry[m.series.id] = parseFloat(m.value);
+      const timestamp = new Date(m.timestamp).getTime();
+      if (!dataMap.has(timestamp)) {
+        dataMap.set(timestamp, { timestamp });
       }
+      const entry = dataMap.get(timestamp);
+      entry[m.series.id] = parseFloat(m.value);
     }
   });
 
-  return Array.from(dataMap.values());
+  // Get the data points and sort them by timestamp
+  const sortedData = Array.from(dataMap.values()).sort(
+    (a, b) => a.timestamp - b.timestamp
+  );
+
+  return sortedData;
 };
 
 const formatXAxis = (unixTime) => {
@@ -137,7 +131,7 @@ const MeasurementChart = ({ measurements, seriesList, highlightedPoint }) => {
         <Tooltip content={<CustomTooltip />} />
         <Legend />
 
-        {seriesList.map((series) => (
+        {useMemo(() => seriesList.map((series) => (
           <Line
             key={series.id}
             type="monotone"
@@ -147,7 +141,7 @@ const MeasurementChart = ({ measurements, seriesList, highlightedPoint }) => {
             activeDot={{ r: 8 }}
             connectNulls
           />
-        ))}
+        )), [seriesList])}
 
         {highlightedDataPoint && yValueForDot !== null && (
           <ReferenceDot
@@ -164,4 +158,4 @@ const MeasurementChart = ({ measurements, seriesList, highlightedPoint }) => {
   );
 };
 
-export default MeasurementChart;
+export default React.memo(MeasurementChart);
