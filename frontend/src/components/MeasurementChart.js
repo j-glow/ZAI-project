@@ -73,6 +73,30 @@ const MeasurementChart = ({ measurements, seriesList, highlightedPoint }) => {
     [measurements, seriesList]
   );
 
+  const tickFormatter = useMemo(() => {
+    if (chartData.length === 0) {
+      return (unixTime) => new Date(unixTime).toLocaleDateString();
+    }
+
+    const minTimestamp = chartData[0].timestamp;
+    const maxTimestamp = chartData[chartData.length - 1].timestamp;
+    const timeRange = maxTimestamp - minTimestamp;
+
+    const oneAndAHalfDaysInMillis = 1.5 * 24 * 60 * 60 * 1000;
+
+    if (timeRange < oneAndAHalfDaysInMillis) {
+      return (unixTime) => new Date(unixTime).toLocaleTimeString('default', {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } else {
+      return (unixTime) => new Date(unixTime).toLocaleDateString('default', {
+        month: 'short',
+        day: 'numeric',
+      });
+    }
+  }, [chartData]);
+
   const highlightedDataPoint = useMemo(() => {
     if (!highlightedPoint) return null;
     const highlightedTimestamp = new Date(highlightedPoint).getTime();
@@ -106,7 +130,7 @@ const MeasurementChart = ({ measurements, seriesList, highlightedPoint }) => {
           type="number"
           dataKey="timestamp"
           domain={['dataMin', 'dataMax']}
-          tickFormatter={formatXAxis}
+          tickFormatter={tickFormatter}
           allowDuplicatedCategory={false}
         />
         <YAxis />
