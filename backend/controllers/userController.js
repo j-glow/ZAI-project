@@ -10,7 +10,7 @@ const generateToken = (id) => {
 const registerUser = async (req, res) => {
   const { username, password } = req.body;
 
-  const userExists = await User.findOne({ username });
+  const userExists = await User.findOne({ where: { username } });
 
   if (userExists) {
     return res.status(400).send('User already exists');
@@ -23,9 +23,9 @@ const registerUser = async (req, res) => {
 
   if (user) {
     res.status(201).json({
-      _id: user._id,
+      id: user.id,
       username: user.username,
-      token: generateToken(user._id),
+      token: generateToken(user.id),
     });
   } else {
     res.status(400).send('Invalid user data');
@@ -35,13 +35,13 @@ const registerUser = async (req, res) => {
 const authUser = async (req, res) => {
   const { username, password } = req.body;
 
-  const user = await User.findOne({ username });
+  const user = await User.findOne({ where: { username } });
 
   if (user && (await user.matchPassword(password))) {
     res.json({
-      _id: user._id,
+      id: user.id,
       username: user.username,
-      token: generateToken(user._id),
+      token: generateToken(user.id),
     });
   } else {
     res.status(401).send('Invalid username or password');
@@ -50,7 +50,7 @@ const authUser = async (req, res) => {
 
 const changePassword = async (req, res) => {
   const { oldPassword, newPassword } = req.body;
-  const user = await User.findById(req.user._id);
+  const user = await User.findByPk(req.user.id);
 
   if (!user) {
     return res.status(404).json({ message: 'User not found' });

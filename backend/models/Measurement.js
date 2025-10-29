@@ -1,21 +1,25 @@
-const mongoose = require('mongoose');
+const { DataTypes, Model } = require('sequelize');
+const { sequelize } = require('../config/db');
+const Series = require('./Series');
 
-const measurementSchema = new mongoose.Schema({
+class Measurement extends Model {}
+
+Measurement.init({
   value: {
-    type: Number,
-    required: true
+    type: DataTypes.FLOAT,
+    allowNull: false
   },
   timestamp: {
-    type: Date,
-    required: true,
-    default: Date.now
-  },
-  series: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: 'Series'
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
   }
+}, {
+  sequelize,
+  modelName: 'Measurement'
 });
 
-const Measurement = mongoose.model('Measurement', measurementSchema);
+Measurement.belongsTo(Series, { foreignKey: 'seriesId' });
+Series.hasMany(Measurement, { foreignKey: 'seriesId' });
+
 module.exports = Measurement;

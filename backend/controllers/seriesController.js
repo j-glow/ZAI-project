@@ -3,7 +3,7 @@ const Measurement = require('../models/Measurement');
 
 const getSeries = async (req, res) => {
   try {
-    const series = await Series.find({});
+    const series = await Series.findAll({});
     res.json(series);
   } catch (error) {
     res.status(500).send('Server Error');
@@ -18,21 +18,20 @@ const createSeries = async (req, res) => {
       return res.status(400).send('Min value must be less than max value');
     }
 
-    const seriesExists = await Series.findOne({ name });
+    const seriesExists = await Series.findOne({ where: { name } });
 
     if (seriesExists) {
       return res.status(400).send('Series with this name already exists');
     }
 
-    const series = new Series({
+    const series = await Series.create({
       name,
       min_value,
       max_value,
       color,
     });
 
-    const createdSeries = await series.save();
-    res.status(201).json(createdSeries);
+    res.status(201).json(series);
   } catch (error) {
     res.status(400).send('Invalid data');
   }
@@ -41,7 +40,7 @@ const createSeries = async (req, res) => {
 const updateSeries = async (req, res) => {
   try {
     const { name, min_value, max_value, color } = req.body;
-    const series = await Series.findById(req.params.id);
+    const series = await Series.findByPk(req.params.id);
 
     if (series) {
       series.name = name || series.name;
@@ -61,11 +60,11 @@ const updateSeries = async (req, res) => {
 
 const deleteSeries = async (req, res) => {
   try {
-    const series = await Series.findById(req.params.id);
+    const series = await Series.findByPk(req.params.id);
 
     if (series) {
-      await Measurement.deleteMany({ series: req.params.id });
-      await series.deleteOne();
+      await Measurement.destroy({ where: { seriesId: req.params.id } });
+      await series.destroy();
       res.send('Series and associated measurements removed');
     } else {
       res.status(404).send('Series not found');

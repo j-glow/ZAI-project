@@ -1,27 +1,32 @@
-const mongoose = require('mongoose');
+const { DataTypes, Model } = require('sequelize');
+const { sequelize } = require('../config/db');
 
-const seriesSchema = new mongoose.Schema({
+class Series extends Model {}
+
+Series.init({
   name: {
-    type: String,
-    required: true,
-    trim: true,
-    default: 'New Series'
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'New Series',
+    trim: true
   },
   min_value: {
-    type: Number,
-    required: true,
-    default: 0
+    type: DataTypes.FLOAT,
+    allowNull: false,
+    defaultValue: 0
   },
   max_value: {
-    type: Number,
-    required: true,
-    default: 100
+    type: DataTypes.FLOAT,
+    allowNull: false,
+    defaultValue: 100
   },
   color: {
-    type: String,
-    default: '#8884d8'
+    type: DataTypes.STRING,
+    defaultValue: '#8884d8'
   }
+}, {
+  sequelize,
+  modelName: 'Series'
 });
 
-const Series = mongoose.model('Series', seriesSchema);
 module.exports = Series;

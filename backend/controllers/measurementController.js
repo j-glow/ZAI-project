@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const Measurement = require('../models/Measurement');
 const Series = require('../models/Series');
 
@@ -8,22 +9,24 @@ const getMeasurements = async (req, res) => {
     let filter = {};
 
     if (seriesId) {
-      filter.series = seriesId;
+      filter.seriesId = seriesId;
     }
 
     if (startDate || endDate) {
       filter.timestamp = {};
       if (startDate) {
-        filter.timestamp.$gte = new Date(startDate);
+        filter.timestamp[Op.gte] = new Date(startDate);
       }
       if (endDate) {
-        filter.timestamp.$lte = new Date(endDate);
+        filter.timestamp[Op.lte] = new Date(endDate);
       }
     }
 
-    const measurements = await Measurement.find(filter)
-      .populate('series', 'name color')
-      .sort({ timestamp: 'desc' });
+    const measurements = await Measurement.findAll({
+      where: filter,
+      include: [{ model: Series, attributes: ['name', 'color'] }],
+      order: [['timestamp', 'DESC']],
+    });
 
     res.json(measurements);
   } catch (error) {
@@ -33,9 +36,9 @@ const getMeasurements = async (req, res) => {
 
 const createMeasurement = async (req, res) => {
   try {
-    const { value, series, timestamp } = req.body;
+    const { value, seriesId, timestamp } = req.body;
 
-    const parentSeries = await Series.findById(series);
+    const parentSeries = await Series.findByPk(seriesId);
     if (!parentSeries) {
       return res.status(404).send('Series not found');
     }
@@ -46,14 +49,13 @@ const createMeasurement = async (req, res) => {
       );
     }
 
-    const measurement = new Measurement({
+    const measurement = await Measurement.create({
       value,
-      series,
+      seriesId,
       timestamp: timestamp || Date.now(),
     });
 
-    const createdMeasurement = await measurement.save();
-    res.status(201).json(createdMeasurement);
+    res.status(201).json(measurement);
   } catch (error) {
     res.status(400).send('Invalid data');
   }
@@ -61,17 +63,17 @@ const createMeasurement = async (req, res) => {
 
 const updateMeasurement = async (req, res) => {
   try {
-    const measurement = await Measurement.findById(req.params.id);
+    const measurement = await Measurement.findByPk(req.params.id);
     if (!measurement) {
       return res.status(404).send('Measurement not found');
     }
 
-    const { value, series, timestamp } = req.body;
+    const { value, seriesId, timestamp } = req.body;
 
     const newValue = value ?? measurement.value;
-    const newSeriesId = series || measurement.series;
+    const newSeriesId = seriesId || measurement.seriesId;
 
-    const parentSeries = await Series.findById(newSeriesId);
+    const parentSeries = await Series.findByPk(newSeriesId);
     if (!parentSeries) {
       return res.status(404).send('Series not found');
     }
@@ -83,7 +85,7 @@ const updateMeasurement = async (req, res) => {
     }
 
     measurement.value = newValue;
-    measurement.series = newSeriesId;
+    measurement.seriesId = newSeriesId;
     measurement.timestamp = timestamp || measurement.timestamp;
 
     const updatedMeasurement = await measurement.save();
@@ -95,10 +97,10 @@ const updateMeasurement = async (req, res) => {
 
 const deleteMeasurement = async (req, res) => {
   try {
-    const measurement = await Measurement.findById(req.params.id);
+    const measurement = await Measurement.findByPk(req.params.id);
 
     if (measurement) {
-      await measurement.deleteOne();
+      await measurement.destroy();
       res.send('Measurement removed');
     } else {
       res.status(404).send('Measurement not found');
