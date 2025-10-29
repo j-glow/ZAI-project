@@ -1,12 +1,12 @@
-const express = require('express');
 const dotenv = require('dotenv');
+dotenv.config();
+
+const express = require('express');
 const cors = require('cors');
 const { connectDB, sequelize } = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
 const seriesRoutes = require('./routes/seriesRoutes');
 const measurementRoutes = require('./routes/measurementRoutes');
-
-dotenv.config();
 
 connectDB();
 
