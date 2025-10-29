@@ -192,20 +192,18 @@ const DashboardPage = () => {
           </div>
         </div>
         <div className="table-area">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            {!loading && (
-              <>
-                <select
-                  value={tableMode}
-                  onChange={(e) => setTableMode(e.target.value)}
-                  className={`table-mode-select ${tableMode === 'series' ? 'series-mode' : ''}`}
-                >
-                  <option value="data">Data</option>
-                  <option value="series">Series</option>
-                </select>
-              </>
-            )}
-          </div>
+          {!loading && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <select
+                value={tableMode}
+                onChange={(e) => setTableMode(e.target.value)}
+                className={`table-mode-select ${tableMode === 'series' ? 'series-mode' : ''}`}
+              >
+                <option value="data">Data</option>
+                <option value="series">Series</option>
+              </select>
+            </div>
+          )}
           <div className="table-scroll-wrapper">
             {loading ? (
               <p>Loading table...</p>
