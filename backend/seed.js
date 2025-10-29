@@ -11,12 +11,11 @@ const seedDatabase = async () => {
     console.log('Database synchronized');
 
     // Create users
-    const users = await User.bulkCreate([
-      { username: 'admin', password: 'admin' },
-      { username: 'sensor1', password: 'sensor1' },
-      { username: 'sensor2', password: 'sensor2' },
-      { username: 'sensor3', password: 'sensor3' },
-    ]);
+    const users = [];
+    users.push(await User.create({ username: 'admin', password: 'admin' }));
+    users.push(await User.create({ username: 'sensor1', password: 'sensor1' }));
+    users.push(await User.create({ username: 'sensor2', password: 'sensor2' }));
+    users.push(await User.create({ username: 'sensor3', password: 'sensor3' }));
     console.log('Users created');
 
     // Create series
