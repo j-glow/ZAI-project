@@ -36,7 +36,7 @@ const MeasurementTable = ({ measurements, seriesList, onMeasurementDeleted, setH
     setEditFormData({
       value: measurement.value,
       timestamp: new Date(measurement.timestamp).toISOString().slice(0, 19),
-      seriesId: measurement.series.id,
+      seriesId: String(measurement.series.id),
     });
   };
 
@@ -57,7 +57,8 @@ const MeasurementTable = ({ measurements, seriesList, onMeasurementDeleted, setH
       onMeasurementUpdated();
     } catch (error) {
       console.error('Failed to update measurement', error);
-      alert('Failed to update measurement');
+      const errorMessage = error.response ? error.response.data : 'Failed to update measurement';
+      alert(errorMessage);
     }
   };
 
