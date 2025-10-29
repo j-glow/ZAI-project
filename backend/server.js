@@ -28,7 +28,7 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
-    await sequelize.sync({ force: true }); // This will drop the table if it already exists
+    await sequelize.sync();
     console.log('Database synchronized');
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
