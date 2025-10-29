@@ -63,7 +63,7 @@ const createMeasurement = async (req, res) => {
 
 const updateMeasurement = async (req, res) => {
   try {
-    const measurement = await Measurement.findByPk(req.params.id);
+    const measurement = await Measurement.findByPk(Number(req.params.id));
     if (!measurement) {
       return res.status(404).send('Measurement not found');
     }

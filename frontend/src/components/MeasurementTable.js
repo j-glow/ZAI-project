@@ -44,7 +44,16 @@ const MeasurementTable = ({ measurements, seriesList, onMeasurementDeleted, setH
     setEditingId(null);
   };
 
-  const handleUpdate = async (id) => {
+  const handleUpdate = async () => {
+    const currentSeries = seriesList.find(s => String(s.id) === editFormData.seriesId);
+    if (currentSeries) {
+      const value = parseFloat(editFormData.value);
+      if (value < currentSeries.min_value || value > currentSeries.max_value) {
+        alert(`Value must be between ${currentSeries.min_value} and ${currentSeries.max_value} for the selected series.`);
+        return;
+      }
+    }
+
     try {
       const config = {
         headers: {
@@ -52,7 +61,7 @@ const MeasurementTable = ({ measurements, seriesList, onMeasurementDeleted, setH
           Authorization: `Bearer ${userInfo.token}`,
         },
       };
-      await axios.put(`${process.env.REACT_APP_API_URL}/measurements/${id}`, editFormData, config);
+      await axios.put(`${process.env.REACT_APP_API_URL}/measurements/${editingId}`, editFormData, config);
       setEditingId(null);
       onMeasurementUpdated();
     } catch (error) {
@@ -63,10 +72,8 @@ const MeasurementTable = ({ measurements, seriesList, onMeasurementDeleted, setH
   };
 
   const handleFormChange = (e) => {
-    setEditFormData({
-      ...editFormData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setEditFormData({ ...editFormData, [name]: value });
   };
 
   const handleDelete = async (id) => {
@@ -150,7 +157,7 @@ const MeasurementTable = ({ measurements, seriesList, onMeasurementDeleted, setH
                     />
                   </td>
                   <td style={tdStyle}>
-                    <button onClick={() => handleUpdate(m.id)}>Save</button>
+                    <button onClick={handleUpdate}>Save</button>
                     <button onClick={handleCancel} style={{ marginLeft: '5px' }}>Cancel</button>
                   </td>
                 </>
