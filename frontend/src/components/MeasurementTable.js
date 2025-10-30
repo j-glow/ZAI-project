@@ -110,7 +110,7 @@ const MeasurementTable = ({ measurements, seriesList, onMeasurementDeleted, setH
           {showSeriesColumn && <th style={seriesThStyle}>Series</th>}
           <th style={valueThStyle}>Value</th>
           <th style={timestampThStyle}>Timestamp</th>
-          {!isGuest && <th style={actionsThStyle}>Actions</th>}
+          {!isGuest && <th style={actionsThStyle} className="actions-cell">Actions</th>}
         </tr>
       </thead>
       <tbody>
@@ -173,7 +173,7 @@ const MeasurementTable = ({ measurements, seriesList, onMeasurementDeleted, setH
                     hourCycle: 'h23',
                   })}</td>
                   {!isGuest && (
-                    <td style={tdStyle}>
+                    <td style={tdStyle} className="actions-cell">
                       <button onClick={() => handleEdit(m)}>Edit</button>
                       <button
                         onClick={(e) => { e.stopPropagation(); handleDelete(m.id); }}

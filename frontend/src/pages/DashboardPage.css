@@ -213,8 +213,7 @@
     border: none;
   }
 
-  .table-area th:last-child,
-  .table-area td:last-child {
+  .table-area .actions-cell {
     display: none !important;
   }
 }
