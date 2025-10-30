@@ -14,7 +14,11 @@ const createSeries = async (req, res) => {
   try {
     const { name, min_value, max_value, color } = req.body;
 
-    if (Number(min_value) >= Number(max_value)) {
+    if (typeof min_value !== 'number' || typeof max_value !== 'number' || !isFinite(min_value) || !isFinite(max_value)) {
+      return res.status(400).send('min_value and max_value must be numbers');
+    }
+
+    if (min_value >= max_value) {
       return res.status(400).send('Min value must be less than max value');
     }
 
@@ -43,9 +47,20 @@ const updateSeries = async (req, res) => {
     const series = await Series.findByPk(req.params.id);
 
     if (series) {
+      const new_min_value = min_value ?? series.min_value;
+      const new_max_value = max_value ?? series.max_value;
+
+      if (typeof new_min_value !== 'number' || typeof new_max_value !== 'number' || !isFinite(new_min_value) || !isFinite(new_max_value)) {
+        return res.status(400).send('min_value and max_value must be numbers');
+      }
+
+      if (new_min_value >= new_max_value) {
+        return res.status(400).send('Min value must be less than max value');
+      }
+
       series.name = name || series.name;
-      series.min_value = min_value ?? series.min_value;
-      series.max_value = max_value ?? series.max_value;
+      series.min_value = new_min_value;
+      series.max_value = new_max_value;
       series.color = color || series.color;
 
       const updatedSeries = await series.save();

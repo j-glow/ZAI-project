@@ -45,7 +45,7 @@ const MeasurementTable = ({ measurements, seriesList, onMeasurementDeleted, setH
   };
 
   const handleUpdate = async () => {
-    const currentSeries = seriesList.find(s => String(s.id) === editFormData.seriesId);
+    const currentSeries = seriesList.find(s => s.id === Number(editFormData.seriesId));
     if (currentSeries) {
       const value = parseFloat(editFormData.value);
       if (value < currentSeries.min_value || value > currentSeries.max_value) {

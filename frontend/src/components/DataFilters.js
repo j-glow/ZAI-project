@@ -48,7 +48,7 @@ const DataFilters = ({
   }));
 
   const handleSeriesChange = (selectedOptions) => {
-    setSeriesFilter(selectedOptions ? selectedOptions.map((option) => option.value) : []);
+    setSeriesFilter(selectedOptions ? selectedOptions.map((option) => Number(option.value)) : []);
   };
 
   const selectedValues = seriesOptions.filter((option) => seriesFilter.includes(option.value));

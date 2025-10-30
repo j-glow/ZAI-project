@@ -64,7 +64,7 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded, className }) => {
     if (!series) {
       return setError('Please select a series.');
     }
-    const selectedSeries = seriesList.find(s => s.id === series);
+    const selectedSeries = seriesList.find(s => s.id === Number(series));
     const numValue = parseFloat(value);
 
     if (numValue < selectedSeries.min_value || numValue > selectedSeries.max_value) {
@@ -86,7 +86,7 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded, className }) => {
       await axios.post(
         `${process.env.REACT_APP_API_URL}/measurements`,
         {
-          series,
+          seriesId: series,
           value: numValue,
           timestamp: timestampToSend,
         },
@@ -105,7 +105,7 @@ const AddMeasurementForm = ({ seriesList, onMeasurementAdded, className }) => {
     }
   };
 
-  const selectedSeries = seriesList.find(s => s.id === series);
+  const selectedSeries = seriesList.find(s => s.id === Number(series));
   const placeholder = selectedSeries
     ? `Min: ${selectedSeries.min_value}, Max: ${selectedSeries.max_value}`
     : 'Enter value';
