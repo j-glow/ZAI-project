@@ -33,6 +33,29 @@ const DashboardPage = () => {
   const [tableMode, setTableMode] = useState('data');
   const [showChangePassword, setShowChangePassword] = useState(false);
 
+  const [isPrinting, setIsPrinting] = useState(false);
+  const [chartDimensions, setChartDimensions] = useState({ width: '100%', height: '100%' });
+
+  const beforePrint = () => {
+    return new Promise((resolve) => {
+      setIsPrinting(true);
+      setChartDimensions({ width: 800, height: 400 });
+      setTimeout(resolve, 50); // Allow state to update and re-render
+    });
+  };
+
+  const afterPrint = () => {
+    setIsPrinting(false);
+    setChartDimensions({ width: '100%', height: '100%' });
+  };
+
+  const onPrint = () => {
+    beforePrint().then(() => {
+      window.print();
+      afterPrint();
+    });
+  };
+
   const fetchData = useCallback(async () => {
     try {
       setError('');
@@ -171,7 +194,7 @@ const DashboardPage = () => {
           </div>
           <div className="chart-area">
             <div className="chart-buttons" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '1rem', gap: '10px' }}>
-              <button onClick={() => window.print()} style={{fontSize: '0.8rem'}}>
+              <button onClick={onPrint} style={{fontSize: '0.8rem'}}>
                 Print
               </button>
               <button onClick={fetchData} style={{fontSize: '0.8rem'}}>
@@ -186,6 +209,8 @@ const DashboardPage = () => {
                   measurements={chartFilteredMeasurements}
                   seriesList={visibleSeriesList}
                   highlightedPoint={highlightedPoint}
+                  isPrinting={isPrinting}
+                  chartDimensions={chartDimensions}
                 />
               )}
             </div>

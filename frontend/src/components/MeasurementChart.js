@@ -61,7 +61,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-const MeasurementChart = ({ measurements, seriesList, highlightedPoint }) => {
+const MeasurementChart = ({ measurements, seriesList, highlightedPoint, isPrinting, chartDimensions }) => {
   const chartData = useMemo(
     () => formatDataForChart(measurements, seriesList),
     [measurements, seriesList]
@@ -108,52 +108,63 @@ const MeasurementChart = ({ measurements, seriesList, highlightedPoint }) => {
     return null;
   }, [highlightedDataPoint, seriesList]);
 
-  return (
-    <ResponsiveContainer width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0, bottom: 0, right: 0 }}>
-      <LineChart
-        data={chartData}
-        margin={{
-          top: 5,
-          right: 40,
-          left: 0,
-          bottom: 5,
-        }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis
-          type="number"
-          dataKey="timestamp"
-          domain={['dataMin', 'dataMax']}
-          tickFormatter={tickFormatter}
-          allowDuplicatedCategory={false}
+  const chart = (
+    <LineChart
+      width={isPrinting ? chartDimensions.width : undefined}
+      height={isPrinting ? chartDimensions.height : undefined}
+      data={chartData}
+      margin={{
+        top: 5,
+        right: 40,
+        left: 0,
+        bottom: 5,
+      }}
+    >
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis
+        type="number"
+        dataKey="timestamp"
+        domain={['dataMin', 'dataMax']}
+        tickFormatter={tickFormatter}
+        allowDuplicatedCategory={false}
+      />
+      <YAxis />
+      <Tooltip content={<CustomTooltip />} />
+      <Legend />
+
+      {useMemo(() => seriesList.map((series) => (
+        <Line
+          key={series.id}
+          type="monotone"
+          dataKey={series.id}
+          name={series.name}
+          stroke={series.color}
+          activeDot={{ r: 8 }}
+          connectNulls
+          isAnimationActive={!isPrinting}
         />
-        <YAxis />
-        <Tooltip content={<CustomTooltip />} />
-        <Legend />
+      )), [seriesList, isPrinting])}
 
-        {useMemo(() => seriesList.map((series) => (
-          <Line
-            key={series.id}
-            type="monotone"
-            dataKey={series.id}
-            name={series.name}
-            stroke={series.color}
-            activeDot={{ r: 8 }}
-            connectNulls
-          />
-        )), [seriesList])}
+      {highlightedDataPoint && yValueForDot !== null && (
+        <ReferenceDot
+          x={highlightedDataPoint.timestamp}
+          y={yValueForDot}
+          r={8}
+          fill="red"
+          stroke="white"
+          isFront
+        />
+      )}
+    </LineChart>
+  );
 
-        {highlightedDataPoint && yValueForDot !== null && (
-          <ReferenceDot
-            x={highlightedDataPoint.timestamp}
-            y={yValueForDot}
-            r={8}
-            fill="red"
-            stroke="white"
-            isFront
-          />
-        )}
-      </LineChart>
+  if (isPrinting) {
+    return chart;
+  }
+
+  return (
+    <ResponsiveContainer width="100%" height="100%">
+      {chart}
     </ResponsiveContainer>
   );
 };
