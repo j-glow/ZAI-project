@@ -101,13 +101,11 @@ const MeasurementTable = ({ measurements, seriesList, onMeasurementDeleted, setH
     }
   };
 
-  const showSeriesColumn = seriesFilter.length !== 1;
-
   return (
     <table style={tableStyle}>
       <thead style={{ background: '#f4f4f4' }}>
         <tr>
-          {showSeriesColumn && <th style={seriesThStyle}>Series</th>}
+          <th style={seriesThStyle}>Series</th>
           <th style={valueThStyle}>Value</th>
           <th style={timestampThStyle}>Timestamp</th>
           {!isGuest && <th style={actionsThStyle} className="actions-cell">Actions</th>}
@@ -123,22 +121,20 @@ const MeasurementTable = ({ measurements, seriesList, onMeasurementDeleted, setH
             >
               {editingId === m.id && !isGuest ? (
                 <>
-                  {showSeriesColumn && (
-                    <td style={tdStyle}>
-                      <select
-                        name="seriesId"
-                        value={editFormData.seriesId}
-                        onChange={handleFormChange}
-                        style={{ width: '100%' }}
-                      >
-                        {seriesList.map((s) => (
-                          <option key={s.id} value={s.id}>
-                            {s.name}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                  )}
+                  <td style={tdStyle}>
+                    <select
+                      name="seriesId"
+                      value={editFormData.seriesId}
+                      onChange={handleFormChange}
+                      style={{ width: '100%' }}
+                    >
+                      {seriesList.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.name}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
                   <td style={tdStyle}>
                     <input
                       type="number"
@@ -165,7 +161,7 @@ const MeasurementTable = ({ measurements, seriesList, onMeasurementDeleted, setH
                 </>
               ) : (
                 <>
-                  {showSeriesColumn && <td style={tdStyle}>{m.series?.name || 'N/A'}</td>}
+                  <td style={tdStyle}>{m.series?.name || 'N/A'}</td>
                   <td style={tdStyle}>{m.value.toFixed(2)}</td>
                   <td style={tdStyle}>{new Date(m.timestamp).toLocaleString('default', {
                     dateStyle: 'short',
@@ -189,7 +185,7 @@ const MeasurementTable = ({ measurements, seriesList, onMeasurementDeleted, setH
           ))
         ) : (
           <tr>
-            <td colSpan={!isGuest ? (showSeriesColumn ? 4 : 3) : (showSeriesColumn ? 3 : 2)} style={{ ...tdStyle, textAlign: 'center', padding: '20px' }}>
+            <td colSpan={!isGuest ? 4 : 3} style={{ ...tdStyle, textAlign: 'center', padding: '20px' }}>
               No measurements found.
             </td>
           </tr>
