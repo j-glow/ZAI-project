@@ -7,10 +7,15 @@ const { connectDB, sequelize } = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
 const seriesRoutes = require('./routes/seriesRoutes');
 const measurementRoutes = require('./routes/measurementRoutes');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpecs = require('./config/swagger');
 
 connectDB();
 
 const app = express();
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+
 
 app.use(cors());
 app.use(express.json());
