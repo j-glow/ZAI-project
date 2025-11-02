@@ -327,13 +327,24 @@ You need a running PostgreSQL instance for the backend. You can either install i
     PORT=5000
     ```
 
-4.  **Seed the database:** This command will create the necessary tables and populate them with sample data (users, series, and measurements).
+4.  **Initialize the database:** Before starting the server for the first time, you need to initialize the database schema. The backend does this automatically when it starts. Simply start and then stop the server once:
     ```bash
-    npm run seed
+    npm start 
+    # Wait for 'Database synchronized' message, then press Ctrl+C
+    ```
+
+5.  **Seed the database:** Populate the database with sample data by executing the `seed.sql` script. You will need your PostgreSQL user password.
+    ```bash
+    # Replace [user] and [database] with your actual credentials
+    psql -U [user] -d [database] -f seed.sql
+    ```
+    For example, if using the Docker setup:
+    ```bash
+    psql -U postgres -d zai_project -f seed.sql
     ```
     **Sample Login:** `username: admin`, `password: admin`
 
-5.  **Start the backend server:**
+6.  **Start the backend server:**
     ```bash
     npm start
     ```
