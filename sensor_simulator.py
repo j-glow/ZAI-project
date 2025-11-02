@@ -1,100 +1,117 @@
 import requests
 import time
 import random
-import getpass
+import threading
 
 # --- Configuration ---
 BASE_URL = "http://localhost:5000/api"
 LOGIN_URL = f"{BASE_URL}/users/login"
 SERIES_URL = f"{BASE_URL}/series"
 MEASUREMENTS_URL = f"{BASE_URL}/measurements"
+POST_INTERVAL_SECONDS = 5
+
+SENSORS = [
+    {"username": "sensor1", "password": "sensor1", "series_name": "Temperature"},
+    {"username": "sensor2", "password": "sensor2", "series_name": "Humidity"},
+    {"username": "sensor3", "password": "sensor3", "series_name": "Pressure"}
+]
 # ---------------------
 
 def login(username, password):
     """Logs in to the API and returns an auth token."""
-    print("Logging in...")
     try:
         payload = {"username": username, "password": password}
         res = requests.post(LOGIN_URL, json=payload)
-
-        if res.status_code == 200:
-            print("Login successful.")
-            return res.json()['token']
-        else:
-            print(f"Login failed: {res.status_code} - {res.text}")
-            return None
-    except requests.exceptions.ConnectionError:
-        print("Error: Could not connect to backend. Is it running?")
+        res.raise_for_status()  # Raise an exception for bad status codes
+        return res.json().get('token')
+    except requests.exceptions.RequestException as e:
+        print(f"[{username}] Login failed: {e}")
         return None
 
-def get_series(token):
-    """Fetches the list of available series."""
-    print("Fetching series list...")
-    headers = {"Authorization": f"Bearer {token}"}
-    res = requests.get(SERIES_URL, headers=headers)
-    return res.json()
+def get_series_details(token, series_name):
+    """Fetches details for a specific series by name."""
+    try:
+        headers = {"Authorization": f"Bearer {token}"}
+        res = requests.get(SERIES_URL, headers=headers)
+        res.raise_for_status()
+        all_series = res.json()
+        for series in all_series:
+            if series.get('name') == series_name:
+                return series
+        print(f"Series '{series_name}' not found.")
+        return None
+    except requests.exceptions.RequestException as e:
+        print(f"Could not fetch series details for '{series_name}': {e}")
+        return None
 
 def post_measurement(token, series_id, value):
     """Posts a new measurement to the API."""
-    headers = {"Authorization": f"Bearer {token}"}
-    payload = {
-        "series": series_id,
-        "value": value,
-        "timestamp": None  # We'll let the server set the current time
-    }
-
     try:
+        headers = {"Authorization": f"Bearer {token}"}
+        payload = {"seriesId": series_id, "value": value}
         res = requests.post(MEASUREMENTS_URL, json=payload, headers=headers)
-        if res.status_code == 201: # 201 = Created
-            print(f"  -> Successfully posted: {value:.2f}")
-        else:
-            # This will show validation errors (e.g., if value is out of range)
-            print(f"  -> Failed to post: {res.status_code} - {res.text}")
-    except Exception as e:
-        print(f"Error posting measurement: {e}")
+        res.raise_for_status()
+        return True
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to post measurement: {e.response.text if e.response else e}")
+        return False
 
-def main():
-    username = input("Enter admin username: ")
-    password = getpass.getpass("Enter admin password: ")
+def simulate_sensor(sensor_info):
+    """The main loop for a single sensor simulation."""
+    username = sensor_info["username"]
+    password = sensor_info["password"]
+    series_name = sensor_info["series_name"]
+    
+    print(f"[{username}] Starting simulation for series '{series_name}'...")
 
+    # 1. Login and get token
     token = login(username, password)
     if not token:
+        print(f"[{username}] Halting simulation due to login failure.")
         return
 
-    series_list = get_series(token)
-    if not series_list:
-        print("No series found. Please create a series in the app first.")
+    # 2. Get series details (ID, min, max)
+    series_details = get_series_details(token, series_name)
+    if not series_details:
+        print(f"[{username}] Halting simulation, cannot find series '{series_name}'.")
         return
+        
+    series_id = series_details.get('id')
+    s_min = series_details.get('min_value', 0)
+    s_max = series_details.get('max_value', 100)
 
-    print("\nAvailable Series:")
-    for i, series in enumerate(series_list):
-        print(f"  [{i+1}] {series['name']} (Min: {series['min_value']}, Max: {series['max_value']})")
+    # 3. Start posting measurements
+    while True:
+        value_to_post = random.uniform(s_min, s_max)
+        print(f"[{username}] Posting value to '{series_name}': {value_to_post:.2f}")
+        
+        if not post_measurement(token, series_id, value_to_post):
+            # If posting fails, try to log in again to refresh the token
+            print(f"[{username}] Measurement post failed. Attempting to re-login...")
+            token = login(username, password)
+            if not token:
+                print(f"[{username}] Re-login failed. Halting.")
+                break
+        
+        time.sleep(POST_INTERVAL_SECONDS * len(SENSORS)) # Stagger posts
 
-    try:
-        choice = int(input(f"Which series do you want to simulate? (1-{len(series_list)}): ")) - 1
-        selected_series = series_list[choice]
-    except (ValueError, IndexError):
-        print("Invalid choice. Exiting.")
-        return
-
-    s_id = selected_series['_id']
-    s_min = selected_series['min_value']
-    s_max = selected_series['max_value']
-
-    print(f"\n--- Starting sensor simulation for '{selected_series['name']}' ---")
-    print(f"Generating random values between {s_min} and {s_max}.")
+def main():
+    print("--- Starting Multi-Sensor Simulation ---")
     print("Press CTRL+C to stop.")
 
+    threads = []
     try:
-        while True:
-            # Generate a random float value within the series' valid range
-            value_to_post = random.uniform(s_min, s_max)
-            post_measurement(token, s_id, value_to_post)
+        for i, sensor in enumerate(SENSORS):
+            thread = threading.Thread(target=simulate_sensor, args=(sensor,)))
+            threads.append(thread)
+            thread.start()
+            time.sleep(POST_INTERVAL_SECONDS) # Stagger the start of each sensor
 
-            # Wait for 3 seconds before sending the next one
-            time.sleep(3)
+        for thread in threads:
+            thread.join() # Wait for all threads to complete
+
     except KeyboardInterrupt:
-        print("\nSensor simulation stopped.")
+        print("\n--- Sensor simulation stopped by user. ---")
 
 if __name__ == "__main__":
     main()
