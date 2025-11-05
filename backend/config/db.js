@@ -1,15 +1,23 @@
 const { Sequelize } = require('sequelize');
 
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
+const dbUrl = process.env.DATABASE_URL;
+const dbSsl = process.env.DB_SSL === 'true';
+
+const options = {
   dialect: 'postgres',
   logging: false,
-  dialectOptions: {
+};
+
+if (dbSsl) {
+  options.dialectOptions = {
     ssl: {
       require: true,
-      rejectUnauthorized: false // Important for NeonDB
-    }
-  }
-});
+      rejectUnauthorized: false,
+    },
+  };
+}
+
+const sequelize = new Sequelize(dbUrl, options);
 
 const connectDB = async () => {
   try {

@@ -366,13 +366,14 @@ You need a running PostgreSQL instance for the backend. You can either install i
     docker ps
     ```
 
-4.  **Update your `.env` file** in the `backend` directory with the correct `DATABASE_URL`:
+4.  **Update your `.env` file** in the `backend` directory with the correct `DATABASE_URL`. For the Docker setup above, you would use:
     ```
     DATABASE_URL="postgresql://zai_user:your_password@localhost:5432/zai_project"
     ```
     Replace `your_password` with the password you set in step 2.
 
-#### Native Installation (Linux)
+<details>
+<summary>Native Installation (Linux)</summary>
 
 1.  **Install PostgreSQL:**
     ```bash
@@ -400,6 +401,8 @@ You need a running PostgreSQL instance for the backend. You can either install i
 
 5.  **Update your `.env` file** in the `backend` directory with the correct `DATABASE_URL`.
 
+</details>
+
 ### 1. Backend Setup
 
 1.  **Navigate to the backend directory:**
@@ -419,6 +422,7 @@ You need a running PostgreSQL instance for the backend. You can either install i
     JWT_SECRET="a_very_strong_and_secret_key_for_jwt"
     PORT=5000
     BASE_URL="http://localhost:5000"
+    DB_SSL=false # Set to true for production databases that require SSL
     ```
 
 4.  **Initialize the database:** Before starting the server for the first time, you need to initialize the database schema. The backend does this automatically when it starts. Simply start and then stop the server once:
