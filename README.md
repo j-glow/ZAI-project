@@ -180,6 +180,21 @@ This section provides a more detailed description of the key files and their pri
     -   **Hooks**:
         -   `beforeCreate` & `beforeUpdate`: These hooks automatically hash the user's password before any `create` or `update` operation, ensuring no plaintext passwords are ever stored.
 
+-   **`models/Series.js`**: Defines the `Series` model for grouping measurements.
+    -   **Class**: `Series` (extends Sequelize `Model`).
+    -   **Fields**:
+        -   `name`: The name of the series (e.g., "Temperature").
+        -   `min_value`, `max_value`: Define the valid range for measurements in this series.
+        -   `color`: A hex color code for representing the series in charts.
+
+-   **`models/Measurement.js`**: Defines the `Measurement` model.
+    -   **Class**: `Measurement` (extends Sequelize `Model`).
+    -   **Fields**:
+        -   `value`: The numerical value of the measurement.
+        -   `timestamp`: The time the measurement was recorded.
+    -   **Associations**:
+        -   `belongsTo(Series)`: Each measurement is associated with a single series.
+
 -   **`controllers/userController.js`**: Handles user-related business logic.
     -   **Key Functions**:
         -   `registerUser`: Creates a new user, hashes their password, and returns a JWT.
@@ -191,9 +206,39 @@ This section provides a more detailed description of the key files and their pri
         -   `createSeries`: Creates a new series, validating that `min_value` is less than `max_value`.
         -   `deleteSeries`: Deletes a series and also removes all associated measurements to maintain data integrity.
 
+-   **`controllers/measurementController.js`**: Handles business logic for measurements.
+    -   **Key Functions**:
+        -   `getMeasurements`: Retrieves measurements, with optional filtering by series, start date, and end date.
+        -   `createMeasurement`: Creates a new measurement, validating its value against the `min_value` and `max_value` of the parent series.
+        -   `updateMeasurement`: Updates a measurement, with the same validation as `createMeasurement`.
+        -   `deleteMeasurement`: Deletes a measurement.
+
 -   **`middleware/authMiddleware.js`**: Contains authentication middleware.
     -   **Function**: `protect`.
     -   **Responsibility**: Verifies the JWT provided in the `Authorization` header. If the token is valid, it decodes the user's ID and attaches the user object to the request, making it available to protected routes.
+
+-   **`routes/userRoutes.js`**: Defines the API routes for user management.
+    -   `POST /api/users/register`: Registers a new user.
+    -   `POST /api/users/login`: Authenticates a user and returns a JWT.
+    -   `PUT /api/users/password`: Allows a logged-in user to change their password.
+
+-   **`routes/seriesRoutes.js`**: Defines the API routes for series management.
+    -   `GET /api/series`: Retrieves all series.
+    -   `POST /api/series`: Creates a new series (protected).
+    -   `PUT /api/series/:id`: Updates a series (protected).
+    -   `DELETE /api/series/:id`: Deletes a series (protected).
+
+-   **`routes/measurementRoutes.js`**: Defines the API routes for measurement management.
+    -   `GET /api/measurements`: Retrieves all measurements, with optional query parameters for filtering.
+    -   `POST /api/measurements`: Creates a new measurement (protected).
+    -   `PUT /api/measurements/:id`: Updates a measurement (protected).
+    -   `DELETE /api/measurements/:id`: Deletes a measurement (protected).
+
+-   **`config/db.js`**: Configures the database connection.
+    -   **Responsibilities**: Initializes Sequelize with the database URL, and provides a `connectDB` function to authenticate and connect to the database.
+
+-   **`config/swagger.js`**: Configures Swagger for API documentation.
+    -   **Responsibilities**: Defines the Swagger options, including the API title, version, and server URL. It also specifies the files that contain the API documentation.
 
 ### Frontend (`frontend/src/`)
 
@@ -202,6 +247,9 @@ This section provides a more detailed description of the key files and their pri
 
 -   **`pages/DashboardPage.js`**: The main page for data visualization.
     -   **Responsibilities**: Fetches all series and measurement data. It manages the application's main state, including filters for the date range and selected series. It passes this data down to the chart and table components.
+
+-   **`pages/LoginPage.js`**: Renders the login page.
+    -   **Responsibilities**: Provides a form for users to log in as an administrator. It also includes a button to continue as a guest.
 
 -   **`components/MeasurementChart.js`**: Renders the data chart.
     -   **Responsibilities**: Displays the measurement data using `Recharts`. It includes a custom implementation to handle printing correctly (see Key Features). It also highlights specific data points when a user clicks on a corresponding row in the table.
@@ -214,6 +262,26 @@ This section provides a more detailed description of the key files and their pri
 
 -   **`context/AuthContext.js`**: Manages global authentication state.
     -   **Responsibilities**: Provides a React Context with the current `user` object, a `login` function to authenticate and store the JWT in local storage, and a `logout` function to clear user data. This allows any component in the app to access the user's authentication status.
+
+-   **`components/AddMeasurementForm.js`**: Provides a form for adding new measurements.
+    -   **Responsibilities**: Allows users to select a series, enter a value, and specify a timestamp. It includes validation to ensure the value is within the allowed range for the selected series.
+
+-   **`components/ChangePassword.js`**: Renders a modal for changing the user's password.
+    -   **Responsibilities**: Provides fields for the old password, new password, and password confirmation. It includes validation to ensure the new passwords match and meet the minimum length requirement.
+
+-   **`components/DataFilters.js`**: Renders the filtering options for the data.
+    -   **Responsibilities**: Allows users to filter data by date range and series. It also provides checkboxes to apply the filters to the chart and/or table.
+
+-   **`components/ManagerBox.js`**: A simple container component for styling.
+    -   **Responsibilities**: Provides a consistent style for the manager boxes.
+
+-   **`components/SeriesTable.js`**: Renders a table of all series.
+    -   **Responsibilities**: Displays all series with their name, min/max values, and color. It also provides buttons for editing and deleting series.
+
+### Root
+
+-   **`sensor_simulator.py`**: A Python script for simulating autonomous sensors.
+    -   **Responsibilities**: Simulates multiple sensors that send data to the backend API. Each sensor logs in, gets a token, and then periodically sends a random measurement to its assigned series.
 
 ---
 
