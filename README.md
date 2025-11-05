@@ -147,20 +147,9 @@ The database consists of three main tables: `Users`, `Series`, and `Measurements
 
 ### Entity-Relationship Diagram (ERD)
 
-```
-+-------------+       +------------+       +----------------+
-|    Users    |       |   Series   |       |  Measurements  |
-+-------------+       +------------+       +----------------+
-| id (PK)     |       | id (PK)    |       | id (PK)        |
-| username    |       | name       |       | value          |
-| password    |       | min_value  |       | timestamp      |
-+-------------+       | max_value  |       | seriesId (FK)  |
-                      | color      |       +----------------+
-                      +------------+               |
-                             |                     |
-                             +---------------------+
-```
-*A single `Series` can have many `Measurements`.*
+![Entity-Relationship Diagram](imgs/erd.png)
+
+*A single `Series` can have many `Measurements`. The diagram was generated using Graphviz (dot).*
 
 ---
 
