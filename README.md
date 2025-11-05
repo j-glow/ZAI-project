@@ -344,6 +344,34 @@ Before you begin, ensure you have the following installed on your system:
 
 You need a running PostgreSQL instance for the backend. You can either install it directly on your system or use Docker.
 
+#### Docker Installation (Recommended)
+
+1.  **Pull the PostgreSQL Docker image:**
+    ```bash
+    docker pull postgres
+    ```
+
+2.  **Run the PostgreSQL container:**
+    ```bash
+    docker run --name zai-postgres -e POSTGRES_USER=zai_user -e POSTGRES_PASSWORD=your_password -e POSTGRES_DB=zai_project -p 5432:5432 -d postgres
+    ```
+    -   Replace `your_password` with a strong password.
+    -   `zai-postgres` is the name of the container.
+    -   `zai_user` is the database user.
+    -   `zai_project` is the database name.
+    -   `-p 5432:5432` maps the container's port 5432 to your host's port 5432.
+
+3.  **Verify the container is running:**
+    ```bash
+    docker ps
+    ```
+
+4.  **Update your `.env` file** in the `backend` directory with the correct `DATABASE_URL`:
+    ```
+    DATABASE_URL="postgresql://zai_user:your_password@localhost:5432/zai_project"
+    ```
+    Replace `your_password` with the password you set in step 2.
+
 #### Native Installation (Linux)
 
 1.  **Install PostgreSQL:**
