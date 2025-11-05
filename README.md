@@ -303,8 +303,6 @@ This section provides a more detailed description of the key files and their pri
 
 ## API Documentation
 
-The backend API is documented using Swagger. Once the backend server is running, the interactive Swagger UI can be accessed at:
-
 The backend API is documented using Swagger. Once the backend server is running, the interactive Swagger UI can be accessed at `/api-docs` on the base URL of the backend server (e.g., `http://localhost:5000/api-docs`).
 
 ---
