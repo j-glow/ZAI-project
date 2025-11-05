@@ -418,7 +418,7 @@ You need a running PostgreSQL instance for the backend. You can either install i
 3.  **Create a `.env` file** in the `backend` directory and populate it with your database credentials, a JWT secret, and the base URL for the server:
     ```env
     # Example for a local PostgreSQL instance
-    DATABASE_URL="postgresql://postgres:password@localhost:5432/zai_project"
+    DATABASE_URL="postgresql://zai_user:your_password@localhost:5432/zai_project"
     JWT_SECRET="a_very_strong_and_secret_key_for_jwt"
     PORT=5000
     BASE_URL="http://localhost:5000"
@@ -431,14 +431,9 @@ You need a running PostgreSQL instance for the backend. You can either install i
     # Wait for 'Database synchronized' message, then press Ctrl+C
     ```
 
-5.  **Seed the database:** Populate the database with sample data by executing the `seed.sql` script. You will need your PostgreSQL user password.
+5.  **Seed the database:** Populate the database with sample data by executing the `seed.sql` script inside the Docker container. You will need your PostgreSQL user password.
     ```bash
-    # Replace [user] and [database] with your actual credentials
-    psql -U [user] -d [database] -f seed.sql
-    ```
-    For example, if using the Docker setup:
-    ```bash
-    psql -U postgres -d zai_project -f seed.sql
+    docker exec -i zai-postgres psql -U zai_user -d zai_project < seed.sql
     ```
     **Sample Login:** `username: admin`, `password: admin`
 
