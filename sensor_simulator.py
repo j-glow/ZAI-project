@@ -3,8 +3,10 @@ import time
 import random
 import threading
 
+import os
+
 # --- Configuration ---
-BASE_URL = "http://localhost:5000/api"
+BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:5000/api")
 LOGIN_URL = f"{BASE_URL}/users/login"
 SERIES_URL = f"{BASE_URL}/series"
 MEASUREMENTS_URL = f"{BASE_URL}/measurements"

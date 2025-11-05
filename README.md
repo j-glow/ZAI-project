@@ -316,7 +316,7 @@ This section provides a more detailed description of the key files and their pri
 
 The backend API is documented using Swagger. Once the backend server is running, the interactive Swagger UI can be accessed at:
 
-`http://localhost:5000/api-docs`
+The backend API is documented using Swagger. Once the backend server is running, the interactive Swagger UI can be accessed at `/api-docs` on the base URL of the backend server (e.g., `http://localhost:5000/api-docs`).
 
 ---
 
@@ -370,10 +370,7 @@ You need a running PostgreSQL instance for the backend. You can either install i
     ```
     Enter and confirm a new password. Then exit `psql` with `\q` and the postgres user session with `exit`.
 
-5.  **Update your `.env` file** in the `backend` directory with the correct `DATABASE_URL`:
-    ```
-    DATABASE_URL="postgresql://zai_user:your_password@localhost:5432/zai_project"
-    ```
+5.  **Update your `.env` file** in the `backend` directory with the correct `DATABASE_URL`.
 
 ### 1. Backend Setup
 
@@ -387,17 +384,18 @@ You need a running PostgreSQL instance for the backend. You can either install i
     npm install
     ```
 
-3.  **Create a `.env` file** in the `backend` directory and populate it with your database credentials and a JWT secret:
+3.  **Create a `.env` file** in the `backend` directory and populate it with your database credentials, a JWT secret, and the base URL for the server:
     ```env
     # Example for a local PostgreSQL instance
     DATABASE_URL="postgresql://postgres:password@localhost:5432/zai_project"
     JWT_SECRET="a_very_strong_and_secret_key_for_jwt"
     PORT=5000
+    BASE_URL="http://localhost:5000"
     ```
 
 4.  **Initialize the database:** Before starting the server for the first time, you need to initialize the database schema. The backend does this automatically when it starts. Simply start and then stop the server once:
     ```bash
-    npm start 
+    npm start
     # Wait for 'Database synchronized' message, then press Ctrl+C
     ```
 
@@ -416,7 +414,7 @@ You need a running PostgreSQL instance for the backend. You can either install i
     ```bash
     npm start
     ```
-    The server will run on `http://localhost:5000`.
+    The server will run on the `PORT` specified in your `.env` file.
 
 ### 2. Frontend Setup
 
@@ -430,8 +428,27 @@ You need a running PostgreSQL instance for the backend. You can either install i
     npm install
     ```
 
-3.  **Start the frontend development server:**
+3.  **Create a `.env` file** in the `frontend` directory and add the URL of the backend API:
+    ```env
+    REACT_APP_API_URL=http://localhost:5000/api
+    ```
+
+4.  **Start the frontend development server:**
     ```bash
     npm start
     ```
-    The React application will open in your browser at `http://localhost:3000`.
+    The React application will open in your browser.
+
+### 3. Sensor Simulator (Optional)
+
+1.  **Navigate to the root directory.**
+
+2.  **Set the `API_BASE_URL` environment variable** to point to your backend API. For example:
+    ```bash
+    export API_BASE_URL="http://localhost:5000/api"
+    ```
+
+3.  **Run the script:**
+    ```bash
+    python3 sensor_simulator.py
+    ```
