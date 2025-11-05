@@ -63,7 +63,7 @@ def simulate_sensor(sensor_info):
     username = sensor_info["username"]
     password = sensor_info["password"]
     series_name = sensor_info["series_name"]
-    
+
     print(f"[{username}] Starting simulation for series '{series_name}'...")
 
     # 1. Login and get token
@@ -77,7 +77,7 @@ def simulate_sensor(sensor_info):
     if not series_details:
         print(f"[{username}] Halting simulation, cannot find series '{series_name}'.")
         return
-        
+
     series_id = series_details.get('id')
     s_min = series_details.get('min_value', 0)
     s_max = series_details.get('max_value', 100)
@@ -86,7 +86,7 @@ def simulate_sensor(sensor_info):
     while True:
         value_to_post = random.uniform(s_min, s_max)
         print(f"[{username}] Posting value to '{series_name}': {value_to_post:.2f}")
-        
+
         if not post_measurement(token, series_id, value_to_post):
             # If posting fails, try to log in again to refresh the token
             print(f"[{username}] Measurement post failed. Attempting to re-login...")
@@ -94,7 +94,7 @@ def simulate_sensor(sensor_info):
             if not token:
                 print(f"[{username}] Re-login failed. Halting.")
                 break
-        
+
         time.sleep(POST_INTERVAL_SECONDS * len(SENSORS)) # Stagger posts
 
 def main():
@@ -104,7 +104,7 @@ def main():
     threads = []
     try:
         for i, sensor in enumerate(SENSORS):
-            thread = threading.Thread(target=simulate_sensor, args=(sensor,)))
+            thread = threading.Thread(target=simulate_sensor, args=(sensor,))
             threads.append(thread)
             thread.start()
             time.sleep(POST_INTERVAL_SECONDS) # Stagger the start of each sensor
