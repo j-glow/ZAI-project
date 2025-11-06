@@ -1,3 +1,38 @@
+-- Drop existing tables
+DROP TABLE IF EXISTS "Measurements";
+DROP TABLE IF EXISTS "Series";
+DROP TABLE IF EXISTS "Users";
+
+-- Create Users table
+CREATE TABLE "Users" (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+-- Create Series table
+CREATE TABLE "Series" (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    min_value FLOAT NOT NULL,
+    max_value FLOAT NOT NULL,
+    color VARCHAR(255),
+    "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+-- Create Measurements table
+CREATE TABLE "Measurements" (
+    id SERIAL PRIMARY KEY,
+    value FLOAT NOT NULL,
+    "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL,
+    "seriesId" INTEGER REFERENCES "Series" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
+    "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
 -- Clear existing data
 TRUNCATE TABLE "Users", "Series", "Measurements" RESTART IDENTITY CASCADE;
 

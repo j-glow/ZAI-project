@@ -412,19 +412,13 @@ You need a running PostgreSQL instance for the backend. You can either install i
     DB_SSL=false # Set to true for production databases that require SSL
     ```
 
-4.  **Initialize the database:** Before starting the server for the first time, you need to initialize the database schema. The backend does this automatically when it starts. Simply start and then stop the server once:
-    ```bash
-    npm start
-    # Wait for 'Database synchronized' message, then press Ctrl+C
-    ```
-
-5.  **Seed the database:** Populate the database with sample data by executing the `seed.sql` script inside the Docker container. You will need your PostgreSQL user password.
+4.  **Seed the database:** This script will create the necessary tables and populate them with sample data:
     ```bash
     docker exec -i zai-postgres psql -U zai_user -d zai_project < seed.sql
     ```
     **Sample Login:** `username: admin`, `password: admin`
 
-6.  **Start the backend server:**
+5.  **Start the backend server:**
     ```bash
     npm start
     ```
