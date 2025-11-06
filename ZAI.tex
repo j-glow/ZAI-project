@@ -1,0 +1,449 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{sectsty}
+
+\geometry{a4paper, margin=1in}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize\ttfamily,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+
+
+\begin{document}
+
+\title{ZAI Project - Advanced Internet Applications}
+\author{Jakub Głowacki}
+\date{}
+\maketitle
+
+\section*{Project Overview}
+This document provides a comprehensive overview of the ZAI project, a web application for collecting and presenting measurement data. It covers the application's features, technical implementation, setup instructions, and security aspects, as per the project requirements.
+
+\tableofcontents
+
+\section{Project Overview}
+This application is designed to collect, manage, and visualize time-series data from various sources. It provides a graphical user interface (GUI) to display data in both chart and table formats, with filtering capabilities. The system supports multiple user roles, data validation, and secure data handling.
+
+An optional extension has been implemented to allow autonomous sensors to send data directly to the backend API, simulating a real-world IoT scenario.
+
+\section{Functional Requirements Checklist}
+Here is a summary of how the application meets the specified functional requirements:
+\begin{itemize}
+    \item \textbf{1. Measurement Data Structure:} A measurement consists of a floating-point \texttt{value}, a \texttt{timestamp}, and an identifier for the \texttt{series} it belongs to.
+    \item \textbf{2. Data Series:} Series group related measurements. Each series has an editable \texttt{name}, a configurable \texttt{color} for chart representation, and a \texttt{min\_value}/\texttt{max\_value} range for data validation.
+    \item \textbf{3. User Roles:} The application supports two user groups:
+    \begin{itemize}
+        \item \textbf{Readers (Unauthenticated):} Can view all measurement data.
+        \item \textbf{Administrators (Authenticated):} Have full CRUD (Create, Read, Update, Delete) access to series and measurements.
+    \end{itemize}
+    \item \textbf{4. Unauthenticated Access:} Users who are not logged in have read-only access to the data.
+    \item \textbf{5. Administrator Privileges:} Logged-in users can manage all data, including adding, editing, and deleting series and individual measurements.
+    \item \textbf{6. Data Validation:} The backend validates new measurements against the \texttt{min\_value} and \texttt{max\_value} defined for the corresponding series. Submissions outside this range are rejected with an appropriate error message.
+    \item \textbf{7. User Experience (UX):} The frontend includes UX enhancements such as real-time input validation and the ability to submit forms by pressing the "Enter" key.
+    \item \textbf{8. Printing:} The application features a print-friendly view. When printing, all UI elements (buttons, forms, etc.) are hidden via CSS media queries, leaving only the chart and data table for a clean report.
+    \item \textbf{9. Password Management:} User passwords are securely hashed. Logged-in users have the ability to change their password.
+    \item \textbf{10. Responsive Web Design (RWD):} The user interface is fully responsive and provides an optimal viewing experience across a wide range of devices, from mobile phones to desktop computers.
+    \item \textbf{11. UI Interactivity:} Clicking on a data record in the table highlights the corresponding point on the chart, improving data analysis.
+    \item \textbf{Optional Extension - Autonomous Sensors:} The backend includes endpoints for registered sensors to submit data directly. A Python script (\texttt{sensor\_simulator.py}) is provided to demonstrate this functionality, simulating a sensor that sends locally generated data.
+\end{itemize}
+
+\section{Technical Requirements Checklist}
+\begin{itemize}
+    \item \textbf{1. Backend Technology:} The backend is implemented in \textbf{Node.js} with the \textbf{Express} framework.
+    \item \textbf{2. Frontend Technology:} The frontend is a \textbf{Single Page Application (SPA)} built with \textbf{React}.
+    \item \textbf{3. REST API \& Documentation:} Communication between the frontend and backend is handled via a well-defined REST API. The API is documented using \textbf{Swagger}, and the documentation is available through the backend.
+    \item \textbf{4. Database Design:} A relational database structure is implemented using \textbf{PostgreSQL} and the \textbf{Sequelize} ORM. The design includes appropriate data types, relationships, and foreign key constraints.
+    \item \textbf{5. Responsive Web Design (RWD):} The frontend is designed using RWD principles, ensuring usability on various screen sizes.
+    \item \textbf{6. Print View via CSS:} The printing functionality is implemented using CSS \texttt{@media print} queries, which modify the standard view to create a clean, paper-friendly report.
+    \item \textbf{7. Security Aspects:} Three key security aspects have been addressed: authentication, SQL injection prevention, and secure password storage.
+    \item \textbf{8. Public Deployment:} The application is deployed and publicly accessible.
+    \item \textbf{9. Project Documentation \& Sample Data:} This PDF, alongside github repositories \textbf{README.md}, serves as the primary documentation. The project includes a seeding script to populate the database with sample data for immediate functionality demonstration.
+\end{itemize}
+
+\section{Live Demo}
+The application is hosted and can be accessed at the following URL:
+\url{https://zai-project.vercel.app/}
+
+\section{Screenshots}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{imgs/login_page.png}
+    \caption{Login Page}
+\end{figure}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{imgs/guest_view.png}
+    \caption{Guest View (Read-Only)}
+\end{figure}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{imgs/admin_view+chart_highlights.png}
+    \caption{Admin View (Full CRUD) \& Chart Highlights}
+\end{figure}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{imgs/filter_menu.png}
+    \caption{Filtering Menu}
+\end{figure}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{imgs/series_add.png}
+    \caption{Adding a New Series}
+\end{figure}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{imgs/measurement_add.png}
+    \caption{Adding a New Measurement}
+\end{figure}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{imgs/password_change.png}
+    \caption{Changing Password}
+\end{figure}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{imgs/page_print_ex.png}
+    \caption{Print Preview}
+\end{figure}
+\clearpage
+
+
+\section{Technology Stack}
+\begin{itemize}
+    \item \textbf{Backend:} Node.js, Express, Sequelize, PostgreSQL, JWT, Bcrypt.js
+    \item \textbf{Frontend:} React, Axios, Recharts, React Router
+    \item \textbf{API Documentation:} Swagger (OpenAPI)
+\end{itemize}
+
+\section{Database Schema}
+The database consists of three main tables: \texttt{Users}, \texttt{Series}, and \texttt{Measurements}.
+\begin{itemize}
+    \item \textbf{Users:} Stores administrator and sensor credentials.
+    \begin{itemize}
+        \item \texttt{id}: Primary Key
+        \item \texttt{username}: String, Unique
+        \item \texttt{password}: String (Hashed)
+    \end{itemize}
+    \item \textbf{Series:} Defines a data series.
+    \begin{itemize}
+        \item \texttt{id}: Primary Key
+        \item \texttt{name}: String, Unique
+        \item \texttt{min\_value}: Float
+        \item \texttt{max\_value}: Float
+        \item \texttt{color}: String (for UI)
+    \end{itemize}
+    \item \textbf{Measurements:} Stores individual data points.
+    \begin{itemize}
+        \item \texttt{id}: Primary Key
+        \item \texttt{value}: Float
+        \item \texttt{timestamp}: DateTime
+        \item \texttt{seriesId}: Foreign Key referencing \texttt{Series.id}
+    \end{itemize}
+\end{itemize}
+
+\subsection{Entity-Relationship Diagram (ERD)}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{imgs/erd.png}
+    \caption{Entity-Relationship Diagram}
+\end{figure}
+\textit{The diagram was generated using Graphviz (dot).}
+
+\section{Codebase Overview}
+This section provides a more detailed description of the key files and their primary functions.
+
+\subsection{Backend (\texttt{backend/})}
+\begin{itemize}
+    \item \textbf{\texttt{server.js}}: The main entry point.
+        \begin{itemize}
+            \item Initializes the Express server, applies middleware (CORS, JSON parsing), connects to the database via Sequelize, mounts the API routes, and starts the server. It also serves the Swagger UI.
+        \end{itemize}
+    \item \textbf{\texttt{models/User.js}}: Defines the \texttt{User} model.
+        \begin{itemize}
+            \item \textbf{Class}: \texttt{User} (extends Sequelize \texttt{Model}).
+            \item \textbf{Key Methods}:
+                \begin{itemize}
+                    \item \texttt{matchPassword(enteredPassword)}: Securely compares a plaintext password with the stored hash using \texttt{bcrypt.compare}.
+                \end{itemize}
+            \item \textbf{Hooks}:
+                \begin{itemize}
+                    \item \texttt{beforeCreate} \& \texttt{beforeUpdate}: These hooks automatically hash the user's password before any \texttt{create} or \texttt{update} operation, ensuring no plaintext passwords are ever stored.
+                \end{itemize}
+        \end{itemize}
+    \item \textbf{\texttt{models/Series.js}}: Defines the \texttt{Series} model for grouping measurements.
+        \begin{itemize}
+            \item \textbf{Class}: \texttt{Series} (extends Sequelize \texttt{Model}).
+            \item \textbf{Fields}:
+                \begin{itemize}
+                    \item \texttt{name}: The name of the series (e.g., "Temperature").
+                    \item \texttt{min\_value}, \texttt{max\_value}: Define the valid range for measurements in this series.
+                    \item \texttt{color}: A hex color code for representing the series in charts.
+                \end{itemize}
+        \end{itemize}
+    \item \textbf{\texttt{models/Measurement.js}}: Defines the \texttt{Measurement} model.
+        \begin{itemize}
+            \item \textbf{Class}: \texttt{Measurement} (extends Sequelize \texttt{Model}).
+            \item \textbf{Fields}:
+                \begin{itemize}
+                    \item \texttt{value}: The numerical value of the measurement.
+                    \item \texttt{timestamp}: The time the measurement was recorded.
+                \end{itemize}
+            \item \textbf{Associations}:
+                \begin{itemize}
+                    \item \texttt{belongsTo(Series)}: Each measurement is associated with a single series.
+                \end{itemize}
+        \end{itemize}
+    \item \textbf{\texttt{controllers/userController.js}}: Handles user-related business logic.
+        \begin{itemize}
+            \item \textbf{Key Functions}:
+                \begin{itemize}
+                    \item \texttt{registerUser}: Creates a new user, hashes their password, and returns a JWT.
+                    \item \texttt{authUser}: Authenticates a user, and if successful, returns a JWT.
+                    \item \texttt{changePassword}: Allows a logged-in user to change their password after verifying their old password.
+                \end{itemize}
+        \end{itemize}
+    \item \textbf{\texttt{controllers/seriesController.js}}: Handles logic for data series.
+        \begin{itemize}
+            \item \textbf{Key Functions}:
+                \begin{itemize}
+                    \item \texttt{createSeries}: Creates a new series, validating that \texttt{min\_value} is less than \texttt{max\_value}.
+                    \item \texttt{deleteSeries}: Deletes a series and also removes all associated measurements to maintain data integrity.
+                \end{itemize}
+        \end{itemize}
+    \item \textbf{\texttt{controllers/measurementController.js}}: Handles business logic for measurements.
+        \begin{itemize}
+            \item \textbf{Key Functions}:
+                \begin{itemize}
+                    \item \texttt{getMeasurements}: Retrieves measurements, with optional filtering by series, start date, and end date.
+                    \item \texttt{createMeasurement}: Creates a new measurement, validating its value against the \texttt{min\_value} and \texttt{max\_value} of the parent series.
+                    \item \texttt{updateMeasurement}: Updates a measurement, with the same validation as \texttt{createMeasurement}.
+                    \item \texttt{deleteMeasurement}: Deletes a measurement.
+                \end{itemize}
+        \end{itemize}
+    \item \textbf{\texttt{middleware/authMiddleware.js}}: Contains authentication middleware.
+        \begin{itemize}
+            \item \textbf{Function}: \texttt{protect}.
+            \item Verifies the JWT provided in the \texttt{Authorization} header. If the token is valid, it decodes the user's ID and attaches the user object to the request, making it available to protected routes.
+        \end{itemize}
+    \item \textbf{\texttt{routes/userRoutes.js}}: Defines the API routes for user management.
+        \begin{itemize}
+            \item \texttt{POST /api/users/register}: Registers a new user.
+            \item \texttt{POST /api/users/login}: Authenticates a user and returns a JWT.
+            \item \texttt{PUT /api/users/password}: Allows a logged-in user to change their password.
+        \end{itemize}
+    \item \textbf{\texttt{routes/seriesRoutes.js}}: Defines the API routes for series management.
+        \begin{itemize}
+            \item \texttt{GET /api/series}: Retrieves all series.
+            \item \texttt{POST /api/series}: Creates a new series (protected).
+            \item \texttt{PUT /api/series/:id}: Updates a series (protected).
+            \item \texttt{DELETE /api/series/:id}: Deletes a series (protected).
+        \end{itemize}
+    \item \textbf{\texttt{routes/measurementRoutes.js}}: Defines the API routes for measurement management.
+        \begin{itemize}
+            \item \texttt{GET /api/measurements}: Retrieves all measurements, with optional query parameters for filtering.
+            \item \texttt{POST /api/measurements}: Creates a new measurement (protected).
+            \item \texttt{PUT /api/measurements/:id}: Updates a measurement (protected).
+            \item \texttt{DELETE /api/measurements/:id}: Deletes a measurement (protected).
+        \end{itemize}
+    \item \textbf{\texttt{config/db.js}}: Configures the database connection.
+        \begin{itemize}
+            \item Initializes Sequelize with the database URL, and provides a \texttt{connectDB} function to authenticate and connect to the database.
+        \end{itemize}
+    \item \textbf{\texttt{config/swagger.js}}: Configures Swagger for API documentation.
+        \begin{itemize}
+            \item Defines the Swagger options, including the API title, version, and server URL. It also specifies the files that contain the API documentation.
+        \end{itemize}
+\end{itemize}
+
+\subsection{Frontend (\texttt{frontend/src/})}
+\begin{itemize}
+    \item \textbf{\texttt{App.js}}: The root component.
+        \begin{itemize}
+            \item Wraps the application in the \texttt{AuthProvider} to provide global state management for authentication. It also defines the application's routes using \texttt{react-router-dom}.
+        \end{itemize}
+    \item \textbf{\texttt{pages/DashboardPage.js}}: The main page for data visualization.
+        \begin{itemize}
+            \item Fetches all series and measurement data. It manages the application's main state, including filters for the date range and selected series. It passes this data down to the chart and table components.
+        \end{itemize}
+    \item \textbf{\texttt{pages/LoginPage.js}}: Renders the login page.
+        \begin{itemize}
+            \item Provides a form for users to log in as an administrator. It also includes a button to continue as a guest.
+        \end{itemize}
+    \item \textbf{\texttt{components/MeasurementChart.js}}: Renders the data chart.
+        \begin{itemize}
+            \item Displays the measurement data using \texttt{Recharts}. It includes a custom implementation to handle printing correctly (see Key Features). It also highlights specific data points when a user clicks on a corresponding row in the table.
+        \end{itemize}
+    \item \textbf{\texttt{components/MeasurementTable.js}}: Renders the data table.
+        \begin{itemize}
+            \item Displays measurement data in a paginated table. Allows logged-in users to delete or edit records. Emits an event when a row is clicked to enable highlighting on the chart.
+        \end{itemize}
+    \item \textbf{\texttt{components/SeriesManager.js}}: Handles CRUD operations for series.
+        \begin{itemize}
+            \item Displays a table of all series. Provides forms for adding and editing series. Includes a confirmation dialog that warns the user if they are about to delete a series that contains measurements.
+        \end{itemize}
+    \item \textbf{\texttt{context/AuthContext.js}}: Manages global authentication state.
+        \begin{itemize}
+            \item Provides a React Context with the current \texttt{user} object, a \texttt{login} function to authenticate and store the JWT in local storage, and a \texttt{logout} function to clear user data. This allows any component in the app to access the user's authentication status.
+        \end{itemize}
+    \item \textbf{\texttt{components/AddMeasurementForm.js}}: Provides a form for adding new measurements.
+        \begin{itemize}
+            \item Allows users to select a series, enter a value, and specify a timestamp. It includes validation to ensure the value is within the allowed range for the selected series.
+        \end{itemize}
+    \item \textbf{\texttt{components/ChangePassword.js}}: Renders a modal for changing the user's password.
+        \begin{itemize}
+            \item Provides fields for the old password, new password, and password confirmation. It includes validation to ensure the new passwords match and meet the minimum length requirement.
+        \end{itemize}
+    \item \textbf{\texttt{components/DataFilters.js}}: Renders the filtering options for the data.
+        \begin{itemize}
+            \item Allows users to filter data by date range and series. It also provides checkboxes to apply the filters to the chart and/or table.
+        \end{itemize}
+    \item \textbf{\texttt{components/ManagerBox.js}}: A simple container component for styling.
+        \begin{itemize}
+            \item Provides a consistent style for the manager boxes.
+        \end{itemize}
+    \item \textbf{\texttt{components/SeriesTable.js}}: Renders a table of all series.
+        \begin{itemize}
+            \item Displays all series with their name, min/max values, and color. It also provides buttons for editing and deleting series.
+        \end{itemize}
+\end{itemize}
+
+\subsection{Root}
+\begin{itemize}
+    \item \textbf{\texttt{sensor\_simulator.py}}: A Python script for simulating autonomous sensors.
+        \begin{itemize}
+            \item Simulates multiple sensors that send data to the backend API. Each sensor logs in, gets a token, and then periodically sends a random measurement to its assigned series.
+        \end{itemize}
+\end{itemize}
+
+\section{Local Setup and Operation}
+Follow these steps to run the application locally.
+
+\subsection{Prerequisites}
+\begin{itemize}
+    \item \textbf{Node.js and npm}
+    \item \textbf{PostgreSQL}
+    \item \textbf{Docker (Optional)}
+\end{itemize}
+
+\subsection{Local PostgreSQL Setup}
+\subsubsection{Docker Installation (Recommended)}
+\begin{enumerate}
+    \item \textbf{Pull the PostgreSQL Docker image:}
+    \begin{lstlisting}[language=bash]
+docker pull postgres
+\end{lstlisting}
+    \item \textbf{Run the PostgreSQL container:}
+    \begin{lstlisting}[language=bash]
+docker run --name zai-postgres -e POSTGRES\_USER=zai\_user -e POSTGRES\_PASSWORD=your_password -e POSTGRES\_DB=zai_project -p 5432:5432 -d postgres
+\end{lstlisting}
+    \item \textbf{Verify the container is running:}
+    \begin{lstlisting}[language=bash]
+docker ps
+\end{lstlisting}
+    \item \textbf{Update your \texttt{.env} file} in the \texttt{backend} directory.
+\end{enumerate}
+
+\subsubsection{Native Installation (Linux)}
+\begin{enumerate}
+    \item \textbf{Install PostgreSQL:}
+    \begin{lstlisting}[language=bash]
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+\end{lstlisting}
+    \item \textbf{Switch to the \texttt{postgres} user:}
+    \begin{lstlisting}[language=bash]
+sudo -i -u postgres
+\end{lstlisting}
+    \item \textbf{Create a new user and database:}
+    \begin{lstlisting}[language=bash]
+createuser --interactive
+createdb zai_project
+\end{lstlisting}
+    \item \textbf{Set a password for the new user:}
+    \begin{lstlisting}[language=bash]
+psql
+\password zai_user
+\end{lstlisting}
+    \item \textbf{Update your \texttt{.env} file} in the \texttt{backend} directory with the correct \texttt{DATABASE\_URL}. For example:
+    \begin{lstlisting}[language=bash]
+DATABASE_URL="postgresql://zai_user:your_password@localhost:5432/zai_project"
+\end{lstlisting}
+\end{enumerate}
+
+\subsection{Backend Setup}
+\begin{enumerate}
+    \item Navigate to the backend directory.
+    \item Install dependencies: \texttt{npm install}
+    \item Create a \texttt{.env} file in the \texttt{backend} directory and populate it with your database credentials, a JWT secret, and the base URL for the server:
+    \begin{lstlisting}[language=bash]
+# Example for a local PostgreSQL instance
+DATABASE_URL="postgresql://zai_user:your_password@localhost:5432/zai_project"
+JWT_SECRET="a_very_strong_and_secret_key_for_jwt"
+PORT=5000
+BASE_URL="http://localhost:5000"
+DB_SSL=false # Set to true for production databases that require SSL
+\end{lstlisting}
+    \item Seed the database. This script creates tables and populates them with sample data:
+    \begin{lstlisting}[language=bash]
+docker exec -i zai-postgres psql -U zai_user -d zai_project < seed.sql
+\end{lstlisting}
+    \item Start the backend server: \texttt{npm start}
+\end{enumerate}
+
+\subsection{Frontend Setup}
+\begin{enumerate}
+    \item Navigate to the frontend directory.
+    \item Install dependencies: \texttt{npm install}
+    \item Create a \texttt{.env} file in the \texttt{frontend} directory and add the URL of the backend API:
+    \begin{lstlisting}[language=bash]
+REACT_APP_API_URL=http://localhost:5000/api
+\end{lstlisting}
+    \item Start the frontend server: \texttt{npm start}
+\end{enumerate}
+
+\subsection{Sensor Simulator (Optional)}
+\begin{enumerate}
+    \item Navigate to the root directory.
+    \item Set the \texttt{API\_BASE\_URL} environment variable to point to your backend API. For example:
+    \begin{lstlisting}[language=bash]
+export API_BASE_URL="http://localhost:5000/api"
+\end{lstlisting}
+    \item Run the script: \texttt{python3 sensor\_simulator.py}
+\end{enumerate}
+
+\end{document}
