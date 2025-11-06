@@ -390,6 +390,11 @@ You need a running PostgreSQL instance for the backend. You can either install i
 
 </details>
 
+### Login Credentials
+The sample data includes a default administrator account:
+- **Username:** `admin`
+- **Password:** `admin`
+
 ### 1. Backend Setup
 
 1.  **Navigate to the backend directory:**
@@ -416,7 +421,6 @@ You need a running PostgreSQL instance for the backend. You can either install i
     ```bash
     docker exec -i zai-postgres psql -U zai_user -d zai_project < seed.sql
     ```
-    **Sample Login:** `username: admin`, `password: admin`
 
 5.  **Start the backend server:**
     ```bash

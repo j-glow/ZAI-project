@@ -46,7 +46,7 @@
 
 \begin{document}
 
-\title{ZAI Project - Advanced Internet Applications}
+\title{ZAI Project}
 \author{Jakub Głowacki}
 \date{}
 \maketitle
@@ -92,7 +92,7 @@ Here is a summary of how the application meets the specified functional requirem
     \item \textbf{6. Print View via CSS:} The printing functionality is implemented using CSS \texttt{@media print} queries, which modify the standard view to create a clean, paper-friendly report.
     \item \textbf{7. Security Aspects:} Three key security aspects have been addressed: authentication, SQL injection prevention, and secure password storage.
     \item \textbf{8. Public Deployment:} The application is deployed and publicly accessible.
-    \item \textbf{9. Project Documentation \& Sample Data:} This PDF, alongside github repositories \textbf{README.md}, serves as the primary documentation. The project includes a seeding script to populate the database with sample data for immediate functionality demonstration.
+    \item \textbf{9. Project Documentation \& Sample Data:} This \texttt{README.md} serves as the primary documentation. The project includes a seeding script to populate the database with sample data for immediate functionality demonstration.
 \end{itemize}
 
 \section{Live Demo}
@@ -182,7 +182,7 @@ The database consists of three main tables: \texttt{Users}, \texttt{Series}, and
     \includegraphics[width=0.8\textwidth]{imgs/erd.png}
     \caption{Entity-Relationship Diagram}
 \end{figure}
-\textit{The diagram was generated using Graphviz (dot).}
+\textit{A single \texttt{Series} can have many \texttt{Measurements}. The diagram was generated using Graphviz (dot).}
 
 \section{Codebase Overview}
 This section provides a more detailed description of the key files and their primary functions.
@@ -350,14 +350,47 @@ This section provides a more detailed description of the key files and their pri
         \end{itemize}
 \end{itemize}
 
+\section{Key Features and Implementation Details}
+\begin{itemize}
+    \item \textbf{Dual-Layer Validation}: To ensure data integrity and provide a good user experience, input is validated on both the \textbf{frontend} (for immediate feedback in the UI) and the \textbf{backend} (as a final security check before data is persisted).
+    \item \textbf{Secure Authentication \& Authorization}: The application uses \textbf{JSON Web Tokens (JWT)} for stateless authentication. Passwords are never stored in plaintext; they are hashed using \textbf{\texttt{bcryptjs}} with a salt. Protected API routes on the backend are secured using custom middleware that verifies the JWT on every request.
+    \item \textbf{Enhanced User Experience (UX)}:
+    \begin{itemize}
+        \item \textbf{Efficient Data Entry}: Forms can be submitted by pressing the "Enter" key.
+        \item \textbf{Safe Deletion}: Users are shown a confirmation dialog with a warning before deleting a series that contains measurement data.
+        \item \textbf{Interactive Data Analysis}: Clicking a row in the measurement table highlights the corresponding point on the chart, making it easier to correlate tabular and graphical data.
+    \end{itemize}
+    \item \textbf{Printing}: A known issue with the \texttt{recharts} library can cause charts to render incorrectly when printing. This application implements a workaround using \texttt{window.addEventListener} for \texttt{beforeprint} and \texttt{afterprint} events. Before printing, the interactive chart is temporarily replaced with a static SVG image of itself, ensuring a clean and accurate printout.
+    \item \textbf{Responsive \& Adaptive Design}: The UI is fully responsive, adapting to different screen sizes from mobile to desktop. It uses CSS media queries to adjust the layout. This is also leveraged for printing, where the aspect ratio of the chart is modified to better fit a standard portrait-oriented page.
+\end{itemize}
+
+\section{Security Aspects Addressed}
+\begin{enumerate}
+    \item \textbf{Correct Authentication and Session Control:} The application uses JSON Web Tokens (JWT) for stateless authentication. Upon login, a signed token is issued to the user. This token must be included in the \texttt{Authorization} header of subsequent requests to protected endpoints. The \texttt{authMiddleware} on the backend verifies the token's validity, ensuring secure session control.
+    \item \textbf{Protection Against SQL Injection:} The backend uses the \textbf{Sequelize ORM} for all database interactions. Sequelize automatically parameterizes queries, which is the standard defense against SQL injection. Raw SQL queries are not used, eliminating the risk of malicious input being executed by the database.
+    \item \textbf{Secure Password Storage:} User passwords are never stored in plaintext. The application uses the \textbf{\texttt{bcryptjs}} library to hash passwords with a salt before storing them in the database. The \texttt{beforeCreate} and \texttt{beforeUpdate} hooks in the \texttt{User} model ensure that hashing is always applied.
+\end{enumerate}
+
+\section{API Documentation}
+The backend API is documented using Swagger. Once the backend server is running, the interactive Swagger UI can be accessed at \texttt{/api-docs} on the base URL of the backend server (e.g., \url{http://localhost:5000/api-docs}).
+
 \section{Local Setup and Operation}
 Follow these steps to run the application locally.
 
 \subsection{Prerequisites}
+Before you begin, ensure you have the following installed on your system:
 \begin{itemize}
-    \item \textbf{Node.js and npm}
-    \item \textbf{PostgreSQL}
-    \item \textbf{Docker (Optional)}
+    \item \textbf{Node.js and npm:} Node.js version 14 or later is required. npm (Node Package Manager) is included with the Node.js installation.
+    \begin{itemize}
+        \item \textbf{To install on Linux (Debian/Ubuntu):}
+        \begin{lstlisting}[language=bash]
+sudo apt update
+sudo apt install nodejs npm
+\end{lstlisting}
+        \item \textbf{For other operating systems (Windows, macOS):} Download the installer from the \href{https://nodejs.org/}{official Node.js website}.
+    \end{itemize}
+    \item \textbf{PostgreSQL:} A relational database required for the backend. See the setup instructions below.
+    \item \textbf{Docker (Optional):} Recommended for an easy PostgreSQL setup. \href{https://docs.docker.com/get-docker/}{Install Docker}.
 \end{itemize}
 
 \subsection{Local PostgreSQL Setup}
@@ -391,7 +424,7 @@ sudo -i -u postgres
 \end{lstlisting}
     \item \textbf{Create a new user and database:}
     \begin{lstlisting}[language=bash]
-createuser --interactive
+createuser --interactive # When prompted, enter a username (e.g., 'zai_user'), and make them a superuser if you wish.
 createdb zai_project
 \end{lstlisting}
     \item \textbf{Set a password for the new user:}
@@ -399,10 +432,8 @@ createdb zai_project
 psql
 \password zai_user
 \end{lstlisting}
-    \item \textbf{Update your \texttt{.env} file} in the \texttt{backend} directory with the correct \texttt{DATABASE\_URL}. For example:
-    \begin{lstlisting}[language=bash]
-DATABASE_URL="postgresql://zai_user:your_password@localhost:5432/zai_project"
-\end{lstlisting}
+    Enter and confirm a new password. Then exit \texttt{psql} with \texttt{\\q} and the postgres user session with \texttt{exit}.
+    \item \textbf{Update your \texttt{.env} file} in the \texttt{backend} directory with the correct \texttt{DATABASE\_URL}.
 \end{enumerate}
 
 \subsection{Backend Setup}
@@ -418,7 +449,7 @@ PORT=5000
 BASE_URL="http://localhost:5000"
 DB_SSL=false # Set to true for production databases that require SSL
 \end{lstlisting}
-    \item Seed the database. This script creates tables and populates them with sample data:
+    \item Seed the database: This script will create the necessary tables and populate them with sample data:
     \begin{lstlisting}[language=bash]
 docker exec -i zai-postgres psql -U zai_user -d zai_project < seed.sql
 \end{lstlisting}
